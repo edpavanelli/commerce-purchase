@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase_management;
+package net.mycompany.commerce.purchase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

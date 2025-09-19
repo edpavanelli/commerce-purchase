@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase_management;
+package net.mycompany.commerce.purchase;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

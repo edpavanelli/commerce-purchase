@@ -7,7 +7,10 @@ import java.io.Serializable;
 @Entity
 @Table(name = "currency_tb")
 public class Currency implements Serializable {
-    @Id
+	
+	
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,6 +28,19 @@ public class Currency implements Serializable {
     @Size(max = 50)
     @NotBlank
     private String country;
+    
+    // No-argument constructor
+    public Currency() {
+		super();
+	}
+	
+    // All-argument constructor
+    public Currency(@Size(min = 3, max = 3) @NotBlank String code, @Size(max = 50) @NotBlank String name,
+			@Size(max = 50) @NotBlank String country) {
+		this.code = code;
+		this.name = name;
+		this.country = country;
+	}
 
     // Getters and setters
     public Long getId() { return id; }
@@ -36,11 +52,4 @@ public class Currency implements Serializable {
     public String getCountry() { return country; }
     public void setCountry(String country) { this.country = country; }
 
-    public Currency() {}
-    public Currency(Long id, String code, String name, String country) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.country = country;
-    }
 }

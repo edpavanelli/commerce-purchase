@@ -42,18 +42,20 @@ public class PurchaseTransaction implements Serializable {
     }
 
     // All-argument constructor
-    public PurchaseTransaction(Long id, BigDecimal amount, Currency currency, LocalDateTime purchaseDate, String description) {
-        this.id = id;
-        this.transactionId = UUID.randomUUID();
-        this.amount = amount;
-        this.currency = currency;
-        this.purchaseDate = purchaseDate;
-        this.description = description;
-    }
+    public PurchaseTransaction(
+			@Digits(integer = 13, fraction = 2) @NotNull BigDecimal amount, @NotNull Currency currency,
+			@NotNull LocalDateTime purchaseDate, @Size(max = 80) String description) {
+		
+		this.transactionId = UUID.randomUUID();
+		this.amount = amount;
+		this.currency = currency;
+		this.purchaseDate = purchaseDate;
+		this.description = description;
+	}
 
     // Getters and setters
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+	public void setId(Long id) { this.id = id; }
     public UUID getTransactionId() { return this.transactionId;}
     public void setTransactionId(UUID transactionId) { this.transactionId = transactionId; }
     public BigDecimal getAmount() { return amount; }

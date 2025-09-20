@@ -3,10 +3,8 @@ package net.mycompany.commerce.purchase.audit;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -15,13 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
 class PurchaseTransactionSubjectTest {
-    @Autowired
-    private PurchaseTransactionSubject subject;
+    // Removed @Autowired and SpringBootTest, instantiate subject directly
 
     @Test
     void testNotifyObserversOnPurchaseAsync() throws InterruptedException {
+        PurchaseTransactionSubject subject = new PurchaseTransactionSubject(); // fresh instance
         TransactionObserver observer = mock(TransactionObserver.class);
         subject.addObserver(observer);
         PurchaseTransaction transaction = mock(PurchaseTransaction.class);

@@ -1,5 +1,7 @@
 package net.mycompany.commerce.purchase.store.domain;
 
+import net.mycompany.commerce.purchase.audit.PurchaseTransactionSubject;
+import net.mycompany.commerce.purchase.audit.TransactionObserver;
 import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
@@ -22,13 +24,23 @@ import static org.mockito.Mockito.*;
 class PurchaseTest {
     private CurrencyRepository currencyRepository;
     private PurchaseTransactionRepository purchaseTransactionRepository;
+    private PurchaseTransactionSubject purchaseTransactionSubject;
+    private TransactionObserver transactionObserver;
     private Purchase purchase;
 
     @BeforeEach
     void setUp() {
         currencyRepository = mock(CurrencyRepository.class);
         purchaseTransactionRepository = mock(PurchaseTransactionRepository.class);
-        purchase = new Purchase(purchaseTransactionRepository, currencyRepository, "USD");
+        purchaseTransactionSubject = mock(PurchaseTransactionSubject.class);
+        transactionObserver = mock(TransactionObserver.class);
+        purchase = new Purchase(
+            purchaseTransactionRepository,
+            currencyRepository,
+            "USD",
+            purchaseTransactionSubject,
+            transactionObserver
+        );
     }
 
     @Test

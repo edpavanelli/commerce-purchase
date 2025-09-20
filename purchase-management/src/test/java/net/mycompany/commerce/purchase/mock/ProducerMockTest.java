@@ -14,12 +14,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import net.mycompany.commerce.purchase.security.SecurityConfig;
+import net.mycompany.commerce.purchase.repository.PurchaseTransactionAuditRepository;
+import net.mycompany.commerce.purchase.model.PurchaseTransactionAudit;
 
 @WebMvcTest(ProducerMock.class)
 @Import(SecurityConfig.class)
@@ -29,6 +33,9 @@ class ProducerMockTest {
 
     @Autowired
     private QueueManagerServiceMock queueManager;
+
+    @Autowired
+    private PurchaseTransactionAuditRepository auditRepository;
 
     @TestConfiguration
     static class MockConfig {
@@ -56,6 +63,20 @@ class ProducerMockTest {
                 .content(json))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.transactionId").value("tx-789"));
+
+        // Poll for async audit to complete (max 5 seconds)
+        boolean found = false;
+        for (int i = 0; i < 50; i++) { // 50 x 100ms = 5s
+            List<PurchaseTransactionAudit> audits = auditRepository.findAll();
+            found = audits.stream().anyMatch(audit ->
+                audit.getOperation().equals("CREATE") &&
+                audit.getPurchaseTransaction() != null &&
+                "tx-789".equals(audit.getPurchaseTransaction().getTransactionId())
+            );
+            if (found) break;
+            Thread.sleep(100);
+        }
+        assertTrue(found, "Audit record for transaction 'tx-789' and operation 'CREATE' should exist");
     }
 
     @Test

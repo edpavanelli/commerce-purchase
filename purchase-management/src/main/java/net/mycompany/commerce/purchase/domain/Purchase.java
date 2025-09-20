@@ -1,17 +1,17 @@
 package net.mycompany.commerce.purchase.domain;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import net.mycompany.commerce.purchase.Utils;
+import net.mycompany.commerce.purchase.audit.TransactionObserver;
+import net.mycompany.commerce.purchase.audit.AuditOperation;
+import net.mycompany.commerce.purchase.audit.PurchaseTransactionSubject;
 import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.repository.CurrencyRepository;
 import net.mycompany.commerce.purchase.repository.PurchaseTransactionRepository;
-import net.mycompany.commerce.purchase.store.consumer.PurchaseConsumer;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +27,21 @@ public class Purchase {
     private final String environmentCurrencyCode;
     private final CurrencyRepository currencyRepository;
     private final PurchaseTransactionRepository purchaseTransactionRepository;
+    private final PurchaseTransactionSubject purchaseTransactionSubject;
+    private final TransactionObserver transactionObserver;
 
     public Purchase(
         PurchaseTransactionRepository purchaseTransactionRepository,
         CurrencyRepository currencyRepository,
-        @Value("${environment.default.currency.code}") String environmentCurrencyCode) {
+        @Value("${environment.default.currency.code}") String environmentCurrencyCode,
+        PurchaseTransactionSubject purchaseTransactionSubject,
+        TransactionObserver transactionObserver) {
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
         this.environmentCurrencyCode = environmentCurrencyCode;
+        this.purchaseTransactionSubject = purchaseTransactionSubject;
+        this.transactionObserver = transactionObserver;
+        this.purchaseTransactionSubject.addObserver(transactionObserver);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -56,6 +63,9 @@ public class Purchase {
         log.debug("Salvando transação de compra");
         purchaseTransactionRepository.save(purchase);
         log.debug("Transação de compra salva com sucesso: {}", purchase.getTransactionId());
+
+        // Notify observer for CREATE operation asynchronously
+        purchaseTransactionSubject.notifyObserversOnPurchaseAsync(purchase, AuditOperation.CREATE);
         
        
         return purchase;

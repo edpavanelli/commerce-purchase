@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase.validators;
+package net.mycompany.commerce.purchase.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

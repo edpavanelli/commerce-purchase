@@ -22,42 +22,66 @@ class CurrencyValidationTest {
 
     @Test
     void testValidCurrency() {
-        Currency currency = new Currency("USD", "US Dollar", "United States");
+        Currency currency = Currency.builder()
+            .code("USD")
+            .name("US Dollar")
+            .country("United States")
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     void testCodeTooShort() {
-        Currency currency = new Currency("US", "US Dollar", "United States");
+        Currency currency = Currency.builder()
+            .code("US")
+            .name("US Dollar")
+            .country("United States")
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("code")));
     }
 
     @Test
     void testCodeBlank() {
-        Currency currency = new Currency("", "US Dollar", "United States");
+        Currency currency = Currency.builder()
+            .code("")
+            .name("US Dollar")
+            .country("United States")
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("code")));
     }
 
     @Test
     void testNameTooLong() {
-        Currency currency = new Currency("USD", "a".repeat(51), "United States");
+        Currency currency = Currency.builder()
+            .code("USD")
+            .name("a".repeat(51))
+            .country("United States")
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("name")));
     }
 
     @Test
     void testCountryBlank() {
-        Currency currency = new Currency("USD", "US Dollar", "");
+        Currency currency = Currency.builder()
+            .code("USD")
+            .name("US Dollar")
+            .country("")
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("country")));
     }
 
     @Test
     void testCountryTooLong() {
-        Currency currency = new Currency("USD", "US Dollar", "a".repeat(51));
+        Currency currency = Currency.builder()
+            .code("USD")
+            .name("US Dollar")
+            .country("a".repeat(51))
+            .build();
         Set<ConstraintViolation<Currency>> violations = validator.validate(currency);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("country")));
     }

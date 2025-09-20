@@ -17,8 +17,8 @@ import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.purchase.domain.Purchase;
+import net.mycompany.commerce.purchase.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.mock.QueueManagerServiceMock;
-import net.mycompany.commerce.purchase.store.dto.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 

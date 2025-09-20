@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.validators.USDateTimeFormat;
+import net.mycompany.commerce.purchase.validator.USDateTimeFormat;
 
 @Data
 @NoArgsConstructor

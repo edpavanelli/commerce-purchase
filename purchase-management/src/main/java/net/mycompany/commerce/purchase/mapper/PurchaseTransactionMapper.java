@@ -1,8 +1,10 @@
-package net.mycompany.commerce.purchase.store.dto;
+package net.mycompany.commerce.purchase.mapper;
 
 import org.springframework.stereotype.Component;
 
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 
 @Component
 public class PurchaseTransactionMapper {

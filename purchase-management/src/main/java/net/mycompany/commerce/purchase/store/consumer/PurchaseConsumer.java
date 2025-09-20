@@ -4,6 +4,10 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -23,20 +27,19 @@ public class PurchaseConsumer {
 
     private final QueueManagerServiceMock queueManager;
     private final Purchase purchaseService;
-    private final PurchaseConsumer self;
+    private ApplicationContext applicationContext;
 
-    public PurchaseConsumer(QueueManagerServiceMock queueManager, Purchase purchaseService, PurchaseConsumer self) {
+    public PurchaseConsumer(QueueManagerServiceMock queueManager, Purchase purchaseService, ApplicationContext applicationContext) {
         this.queueManager = queueManager;
         this.purchaseService = purchaseService;
-        this.self = self;
-  
+        this.applicationContext = applicationContext;
     }
     
-    @PostConstruct
-    public void init() {
-        // chama via proxy para @Async funcionar
-    	log.info("Iniciando consumidor de mensagens de compra...");
-        self.consumeMessages();
+
+    @EventListener(ContextRefreshedEvent.class)
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        // chama via proxy para @Async funcionar após contexto estar pronto
+    	applicationContext.getBean(PurchaseConsumer.class).consumeMessages();
     }
 
     @Async
@@ -65,7 +68,7 @@ public class PurchaseConsumer {
         }
     }
 
-    public void processMessage(UUID transactionId, @Valid StorePurchaseRequest request) {
+    public void processMessage(String transactionId, @Valid StorePurchaseRequest request) {
         // salva a compra
     	
     	log.debug("Processando compra: {}", request);

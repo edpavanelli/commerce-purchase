@@ -40,6 +40,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-messaging")
 	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+    implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
     implementation("org.glassfish:jakarta.el:4.0.2")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

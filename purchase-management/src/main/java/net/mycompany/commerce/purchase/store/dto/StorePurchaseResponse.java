@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class StorePurchaseResponse implements Serializable {
-    private UUID transactionId;
+    private String transactionId;
 
     // Getters and setters
-    public UUID getTransactionId() { return transactionId; }
-    public void setTransactionId(UUID transactionId) { this.transactionId = transactionId; }
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 }

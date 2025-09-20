@@ -16,10 +16,11 @@ public class PurchaseTransaction implements Serializable {
 
     @Column(nullable = false, unique = true, updatable = false)
     @NotNull
-    private UUID transactionId;
+    private String transactionId;
 
     @Column(precision = 15, scale = 2, nullable = false)
     @Digits(integer = 13, fraction = 2)
+    @Positive(message = "Amount must be positive")
     @NotNull
     private BigDecimal amount;
 
@@ -42,7 +43,7 @@ public class PurchaseTransaction implements Serializable {
     }
 
     // All-argument constructor
-    public PurchaseTransaction(@NotNull UUID transactionId,
+    public PurchaseTransaction(@NotNull String transactionId,
 			@Digits(integer = 13, fraction = 2) @NotNull BigDecimal amount, @NotNull Currency currency,
 			@NotNull LocalDateTime purchaseDate, @Size(max = 80) String description) {
 		super();
@@ -57,8 +58,8 @@ public class PurchaseTransaction implements Serializable {
     // Getters and setters
     public Long getId() { return id; }
 	public void setId(Long id) { this.id = id; }
-    public UUID getTransactionId() { return this.transactionId;}
-    public void setTransactionId(UUID transactionId) { this.transactionId = transactionId; }
+    public String getTransactionId() { return this.transactionId;}
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
     public Currency getCurrency() { return currency; }

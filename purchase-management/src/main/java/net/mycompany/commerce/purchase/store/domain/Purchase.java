@@ -3,6 +3,7 @@ package net.mycompany.commerce.purchase.store.domain;
 import java.util.Optional;
 import java.util.UUID;
 
+import net.mycompany.commerce.purchase.errorhandler.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.repository.CurrencyRepository;
@@ -36,7 +37,7 @@ public class Purchase {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public StorePurchaseResponse newPurchase(StorePurchaseRequest request, UUID transactionId) {
+    public StorePurchaseResponse newPurchase(StorePurchaseRequest request, String transactionId) {
     	
     	log.debug("Processando nova compra: {}", request);
     	log.debug("Usando moeda padrão do sistema: {}", environmentCurrencyCode);
@@ -44,7 +45,7 @@ public class Purchase {
         
         if (currencyOpt.isEmpty()) {
         	log.error("Moeda não encontrada no sistema: {}", environmentCurrencyCode);
-            throw new IllegalArgumentException("Currency not found: " + environmentCurrencyCode);
+            throw new DataBaseNotFoundException();
         }
         
         Currency currency = currencyOpt.get();

@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 
 public class StorePurchaseRequest implements Serializable {
     @NotNull
-    @Digits(integer = 13, fraction = 2)
+    @Digits(integer = 13, fraction = 2, message = "Wrong amount format")
+    @Positive(message = "Amount must be positive")
     private BigDecimal amount;
 
     @Size(max = 50, message = "description size exceeded")

@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import net.mycompany.commerce.purchase.validator.USDateTimeFormat;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTimeFormat;
 import jakarta.validation.ConstraintViolation;
 
 import java.math.BigDecimal;

@@ -1,6 +1,10 @@
 package net.mycompany.commerce.purchase.audit;
 
-import net.mycompany.commerce.purchase.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperation;
+import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
+import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.junit.jupiter.api.extension.ExtendWith;

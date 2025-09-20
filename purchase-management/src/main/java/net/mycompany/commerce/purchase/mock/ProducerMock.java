@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import net.mycompany.commerce.purchase.domain.Purchase;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 
 @RestController
 @RequestMapping("/commerce/purchase/v1")

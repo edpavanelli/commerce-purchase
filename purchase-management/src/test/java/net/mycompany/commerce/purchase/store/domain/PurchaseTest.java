@@ -1,16 +1,16 @@
 package net.mycompany.commerce.purchase.store.domain;
 
-import net.mycompany.commerce.purchase.audit.PurchaseTransactionSubject;
-import net.mycompany.commerce.purchase.audit.TransactionObserver;
-import net.mycompany.commerce.purchase.domain.Purchase;
-import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
-import net.mycompany.commerce.purchase.mapper.PurchaseTransactionMapper;
-import net.mycompany.commerce.purchase.model.Currency;
-import net.mycompany.commerce.purchase.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.repository.CurrencyRepository;
-import net.mycompany.commerce.purchase.repository.PurchaseTransactionRepository;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
-
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
+import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
+import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
+import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
+import net.mycompany.commerce.purchase.infrastructure.config.exception.DataBaseNotFoundException;
+import net.mycompany.commerce.purchase.infrastructure.repository.CurrencyRepository;
+import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionRepository;
+import net.mycompany.commerce.purchase.domain.model.port.TransactionIdGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +27,9 @@ class PurchaseTest {
     private PurchaseTransactionRepository purchaseTransactionRepository;
     private PurchaseTransactionSubject purchaseTransactionSubject;
     private TransactionObserver transactionObserver;
-    private Purchase purchase;
+    private StorePurchaseService purchase;
     private PurchaseTransactionMapper purchaseTransactionMapper;
+    private TransactionIdGenerator transactionIdGenerator;
 
     @BeforeEach
     void setUp() {
@@ -36,13 +37,16 @@ class PurchaseTest {
         purchaseTransactionRepository = mock(PurchaseTransactionRepository.class);
         purchaseTransactionSubject = mock(PurchaseTransactionSubject.class);
         transactionObserver = mock(TransactionObserver.class);
-        purchaseTransactionMapper = new PurchaseTransactionMapper();
-        purchase = new Purchase(
+        purchaseTransactionMapper = mock(PurchaseTransactionMapper.class);
+        transactionIdGenerator = mock(TransactionIdGenerator.class);
+        purchase = new StorePurchaseService(
             purchaseTransactionRepository,
             currencyRepository,
             "USD",
             purchaseTransactionSubject,
-            transactionObserver
+            transactionObserver,
+            purchaseTransactionMapper,
+            transactionIdGenerator
         );
     }
 
@@ -59,12 +63,18 @@ class PurchaseTest {
             .country("United States")
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.of(currency));
-        when(purchaseTransactionRepository.save(any(PurchaseTransaction.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(transactionIdGenerator.nextId()).thenReturn("tx-123");
+        // Mock the mapper to return a domain object with setters
+        var purchaseTransaction = mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class);
+        when(purchaseTransactionMapper.toDomain(request)).thenReturn(purchaseTransaction);
+        when(purchaseTransactionMapper.toDto(purchaseTransaction)).thenReturn(
+            StorePurchaseResponse.builder().transactionId("tx-123").build()
+        );
+        when(purchaseTransactionRepository.save(any())).thenReturn(purchaseTransaction);
 
-        PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
-        PurchaseTransaction result = purchase.storePurchase(purchaseTransaction);
-        assertNotNull(result.getTransactionId());
-        assertEquals(currency, result.getCurrency());
+        StorePurchaseResponse response = purchase.storePurchase(request);
+        assertNotNull(response);
+        assertEquals("tx-123", response.getTransactionId());
     }
 
     @Test
@@ -75,8 +85,7 @@ class PurchaseTest {
             .purchaseDate(LocalDateTime.now())
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.empty());
-
-        PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
-        assertThrows(DataBaseNotFoundException.class, () -> purchase.storePurchase(purchaseTransaction));
+        when(purchaseTransactionMapper.toDomain(request)).thenReturn(mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class));
+        assertThrows(DataBaseNotFoundException.class, () -> purchase.storePurchase(request));
     }
 }

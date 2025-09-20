@@ -1,6 +1,10 @@
 package net.mycompany.commerce.purchase.model;
 
 import org.junit.jupiter.api.Test;
+
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;
+
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 

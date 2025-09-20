@@ -1,7 +1,5 @@
 package net.mycompany.commerce.purchase.mock;
 
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +19,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import net.mycompany.commerce.purchase.security.SecurityConfig;
-import net.mycompany.commerce.purchase.repository.PurchaseTransactionAuditRepository;
-import net.mycompany.commerce.purchase.model.PurchaseTransactionAudit;
+
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;
+import net.mycompany.commerce.purchase.infrastructure.config.security.SecurityConfig;
+import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionAuditRepository;
 
 @WebMvcTest(ProducerMock.class)
 @Import(SecurityConfig.class)
@@ -59,7 +60,7 @@ class ProducerMockTest {
             // Create a mock PurchaseTransactionAudit with expected values
             PurchaseTransactionAudit audit = Mockito.mock(PurchaseTransactionAudit.class);
             Mockito.when(audit.getOperation()).thenReturn("CREATE");
-            net.mycompany.commerce.purchase.model.PurchaseTransaction tx = Mockito.mock(net.mycompany.commerce.purchase.model.PurchaseTransaction.class);
+            net.mycompany.commerce.purchase.domain.model.PurchaseTransaction tx = Mockito.mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class);
             Mockito.when(tx.getTransactionId()).thenReturn("tx-789");
             Mockito.when(audit.getPurchaseTransaction()).thenReturn(tx);
             auditRepository.save(audit);
@@ -81,7 +82,7 @@ class ProducerMockTest {
     }
 
     // Helper mock for transaction
-    static class PurchaseTransactionMock extends net.mycompany.commerce.purchase.model.PurchaseTransaction {
+    static class PurchaseTransactionMock extends net.mycompany.commerce.purchase.domain.model.PurchaseTransaction {
         private final String transactionId;
         public PurchaseTransactionMock(String transactionId) { this.transactionId = transactionId; }
         @Override

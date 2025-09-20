@@ -6,8 +6,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import net.mycompany.commerce.purchase.model.Currency;
-import net.mycompany.commerce.purchase.repository.CurrencyRepository;
+import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.infrastructure.repository.CurrencyRepository;
 
 @Component
 public class CurrencyInitializer {

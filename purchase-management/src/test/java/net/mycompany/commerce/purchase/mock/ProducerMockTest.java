@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import net.mycompany.commerce.mock.ProducerMock;
+import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;

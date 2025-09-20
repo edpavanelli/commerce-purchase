@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase.mock;
+package net.mycompany.commerce.mock;
 
 import java.util.Map;
 import java.util.UUID;

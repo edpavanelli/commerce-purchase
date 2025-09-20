@@ -20,7 +20,7 @@ import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTim
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StorePurchaseRequest implements Serializable {
+public class StorePurchaseRequest{
     @NotNull
     @Digits(integer = 13, fraction = 2, message = "Wrong amount format")
     @Positive(message = "Amount must be positive")

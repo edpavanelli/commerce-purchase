@@ -1,11 +1,20 @@
 package net.mycompany.commerce.purchase.domain.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "purchase_transaction_audit_tb")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PurchaseTransactionAudit implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,24 +33,4 @@ public class PurchaseTransactionAudit implements Serializable {
     @Column(nullable = false)
     private LocalDateTime changedDate = LocalDateTime.now();
 
-    public PurchaseTransactionAudit() {}
-
-    public PurchaseTransactionAudit(PurchaseTransaction purchaseTransaction, String operation, String changedBy, LocalDateTime changedDate) {
-        this.purchaseTransaction = purchaseTransaction;
-        this.operation = operation;
-        this.changedBy = changedBy;
-        this.changedDate = changedDate;
-    }
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public PurchaseTransaction getPurchaseTransaction() { return purchaseTransaction; }
-    public void setPurchaseTransaction(PurchaseTransaction purchaseTransaction) { this.purchaseTransaction = purchaseTransaction; }
-    public String getOperation() { return operation; }
-    public void setOperation(String operation) { this.operation = operation; }
-    public String getChangedBy() { return changedBy; }
-    public void setChangedBy(String changedBy) { this.changedBy = changedBy; }
-    public LocalDateTime getChangedDate() { return changedDate; }
-    public void setChangedDate(LocalDateTime changedDate) { this.changedDate = changedDate; }
 }

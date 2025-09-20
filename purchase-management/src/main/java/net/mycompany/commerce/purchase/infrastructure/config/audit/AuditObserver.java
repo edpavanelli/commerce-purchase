@@ -1,6 +1,5 @@
 package net.mycompany.commerce.purchase.infrastructure.config.audit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +20,14 @@ public class AuditObserver implements TransactionObserver {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void onPurchaseTransactionChanged(PurchaseTransaction transaction, AuditOperation operation) {
-        PurchaseTransactionAudit audit = new PurchaseTransactionAudit(
-            transaction,
-            operation.name(),
-            "SystemUser", //should be replaced with actual user info
-            LocalDateTime.now()
-        );
+        
+    	PurchaseTransactionAudit audit = PurchaseTransactionAudit.builder()
+				.purchaseTransaction(transaction)
+				.operation(operation.name())
+				.changedBy("SystemUser") //should be replaced with actual user info
+				.changedDate(LocalDateTime.now())
+				.build();
+    	
         auditRepository.save(audit);
     }
 }

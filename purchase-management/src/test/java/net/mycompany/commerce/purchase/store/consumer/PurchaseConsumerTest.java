@@ -1,10 +1,10 @@
 package net.mycompany.commerce.purchase.store.consumer;
 
+import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.consumer.PurchaseConsumer;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
-import net.mycompany.commerce.purchase.mock.QueueManagerServiceMock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

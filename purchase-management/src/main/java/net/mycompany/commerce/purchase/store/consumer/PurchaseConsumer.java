@@ -58,7 +58,7 @@ public class PurchaseConsumer {
                 
                 
                 log.debug("Mensagem de compra recebida: {}", msg);
-                processMessage(msg.transactionId(), msg.request());
+                storePurchase(msg.transactionId(), msg.request());
                 
                 log.debug("Mensagem de compra processada: {}", msg);
             } catch (InterruptedException e) {
@@ -68,7 +68,7 @@ public class PurchaseConsumer {
         }
     }
 
-    public void processMessage(String transactionId, @Valid StorePurchaseRequest request) {
+    public void storePurchase(String transactionId, @Valid StorePurchaseRequest request) {
         // salva a compra
     	
     	log.debug("Processando compra: {}", request);

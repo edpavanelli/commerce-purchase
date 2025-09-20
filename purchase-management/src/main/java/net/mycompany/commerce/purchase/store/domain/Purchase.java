@@ -3,7 +3,7 @@ package net.mycompany.commerce.purchase.store.domain;
 import java.util.Optional;
 import java.util.UUID;
 
-import net.mycompany.commerce.purchase.errorhandler.DataBaseNotFoundException;
+import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.repository.CurrencyRepository;
@@ -30,7 +30,7 @@ public class Purchase {
     public Purchase(
         PurchaseTransactionRepository purchaseTransactionRepository,
         CurrencyRepository currencyRepository,
-        @Value("${environment.default.currency.code:USD}") String environmentCurrencyCode) {
+        @Value("${environment.default.currency.code}") String environmentCurrencyCode) {
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
         this.environmentCurrencyCode = environmentCurrencyCode;

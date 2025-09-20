@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase.errorhandler;
+package net.mycompany.commerce.purchase.exception;
 
 public class DataBaseNotFoundException extends RuntimeException {
     private final String code;

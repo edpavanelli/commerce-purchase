@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase.errorhandler;
+package net.mycompany.commerce.purchase.exception;
 
 import java.io.IOException;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package net.mycompany.commerce.purchase.configuration;
+package net.mycompany.commerce.purchase.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

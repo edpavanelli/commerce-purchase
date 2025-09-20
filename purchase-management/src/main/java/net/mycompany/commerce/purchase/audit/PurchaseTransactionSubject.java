@@ -1,0 +1,40 @@
+package net.mycompany.commerce.purchase.audit;
+
+import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Async;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.mycompany.commerce.purchase.model.PurchaseTransaction;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+@Component
+public class PurchaseTransactionSubject {
+    private static final Logger log = LoggerFactory.getLogger(PurchaseTransactionSubject.class);
+    private final List<TransactionObserver> observers = new CopyOnWriteArrayList<>();
+
+    public void addObserver(TransactionObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(TransactionObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObserversOnPurchase(PurchaseTransaction transaction, AuditOperation operation) {
+        for (TransactionObserver observer : observers) {
+            observer.onPurchaseTransactionChanged(transaction, operation);
+        }
+    }
+
+    @Async
+    public void notifyObserversOnPurchaseAsync(PurchaseTransaction transaction, AuditOperation operation) {
+        try {
+            notifyObserversOnPurchase(transaction, operation);
+        } catch (Exception e) {
+            log.error("Async audit notification failed", e);
+        }
+    }
+}

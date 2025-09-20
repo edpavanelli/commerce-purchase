@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import net.mycompany.commerce.purchase.store.domain.Purchase;
+import net.mycompany.commerce.purchase.domain.Purchase;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 
@@ -38,11 +38,11 @@ public class ProducerMock {
     	
     	log.debug("Received purchase request: {}", purchase);
     	
-        String transactionId = queueManager.enqueue(purchase);
-        log.debug("Enqueued purchase with transactionId: {}", transactionId);
+        String statusCode = queueManager.enqueue(purchase);
+        log.debug("Enqueued purchase with status code: {}", statusCode);
         
     	
-        return ResponseEntity.accepted().body(Map.of("transactionId", transactionId.toString()));
+        return ResponseEntity.accepted().body(Map.of("statusCode", statusCode));
     }
 
     // Consulta resultado (reply-to)

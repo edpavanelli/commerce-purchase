@@ -12,10 +12,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import net.mycompany.commerce.purchase.model.PurchaseTransaction;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
+import net.mycompany.commerce.purchase.domain.Purchase;
 import net.mycompany.commerce.purchase.mock.QueueManagerServiceMock;
-import net.mycompany.commerce.purchase.store.domain.Purchase;
+import net.mycompany.commerce.purchase.store.dto.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 
@@ -28,11 +31,16 @@ public class PurchaseConsumer {
     private final QueueManagerServiceMock queueManager;
     private final Purchase purchaseService;
     private ApplicationContext applicationContext;
+    private final PurchaseTransactionMapper purchaseTransactionMapper;
 
-    public PurchaseConsumer(QueueManagerServiceMock queueManager, Purchase purchaseService, ApplicationContext applicationContext) {
+    public PurchaseConsumer(QueueManagerServiceMock queueManager, 
+    		Purchase purchaseService, 
+    		ApplicationContext applicationContext,
+    		PurchaseTransactionMapper purchaseTransactionMapper) {
         this.queueManager = queueManager;
         this.purchaseService = purchaseService;
         this.applicationContext = applicationContext;
+        this.purchaseTransactionMapper = purchaseTransactionMapper;
     }
     
 
@@ -58,7 +66,7 @@ public class PurchaseConsumer {
                 
                 
                 log.debug("Mensagem de compra recebida: {}", msg);
-                storePurchase(msg.transactionId(), msg.request());
+                storePurchase(msg.request());
                 
                 log.debug("Mensagem de compra processada: {}", msg);
             } catch (InterruptedException e) {
@@ -68,18 +76,19 @@ public class PurchaseConsumer {
         }
     }
 
-    public void storePurchase(String transactionId, @Valid StorePurchaseRequest request) {
-        // salva a compra
+    public void storePurchase(@Valid StorePurchaseRequest request) {
     	
     	log.debug("Processando compra: {}", request);
-        purchaseService.newPurchase(request, transactionId);
+    		
+    	PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
+    	
+    	purchaseTransaction = purchaseService.storePurchase(purchaseTransaction);
         
         // cria e armazena resposta
         log.debug("Criando resposta para a compra: {}", request);
-        StorePurchaseResponse resp = new StorePurchaseResponse();
-        resp.setTransactionId(transactionId);
+        StorePurchaseResponse resp = purchaseTransactionMapper.toResponseDto(purchaseTransaction);
         
         log.debug("Armazenando resposta para a compra: {}", resp);
-        queueManager.putResponse(transactionId, resp);
+        queueManager.putResponse(resp);
     }
 }

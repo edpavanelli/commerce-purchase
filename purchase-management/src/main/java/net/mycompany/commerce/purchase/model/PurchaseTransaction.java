@@ -1,14 +1,33 @@
 package net.mycompany.commerce.purchase.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "purchase_transaction_tb")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PurchaseTransaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,35 +56,5 @@ public class PurchaseTransaction implements Serializable {
     @Size(max = 80)
     private String description;
 
-    // No-argument constructor
-    public PurchaseTransaction() {
-        
-    }
-
-    // All-argument constructor
-    public PurchaseTransaction(@NotNull String transactionId,
-			@Digits(integer = 13, fraction = 2) @NotNull BigDecimal amount, @NotNull Currency currency,
-			@NotNull LocalDateTime purchaseDate, @Size(max = 80) String description) {
-		super();
-		this.transactionId = transactionId;
-		this.amount = amount;
-		this.currency = currency;
-		this.purchaseDate = purchaseDate;
-		this.description = description;
-	}
-
-
-    // Getters and setters
-    public Long getId() { return id; }
-	public void setId(Long id) { this.id = id; }
-    public String getTransactionId() { return this.transactionId;}
-    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public Currency getCurrency() { return currency; }
-    public void setCurrency(Currency currency) { this.currency = currency; }
-    public LocalDateTime getPurchaseDate() { return purchaseDate; }
-    public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+   
 }

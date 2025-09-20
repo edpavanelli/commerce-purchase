@@ -1,5 +1,6 @@
 package net.mycompany.commerce.purchase.store.domain;
 
+import net.mycompany.commerce.purchase.domain.Purchase;
 import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;

@@ -1,8 +1,9 @@
-package net.mycompany.commerce.purchase.store.domain;
+package net.mycompany.commerce.purchase.domain;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import net.mycompany.commerce.purchase.Utils;
 import net.mycompany.commerce.purchase.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.model.Currency;
 import net.mycompany.commerce.purchase.model.PurchaseTransaction;
@@ -37,9 +38,9 @@ public class Purchase {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public StorePurchaseResponse newPurchase(StorePurchaseRequest request, String transactionId) {
+    public PurchaseTransaction storePurchase(PurchaseTransaction purchase) {
     	
-    	log.debug("Processando nova compra: {}", request);
+    	log.debug("Processando nova compra: {}", purchase);
     	log.debug("Usando moeda padrão do sistema: {}", environmentCurrencyCode);
         Optional<Currency> currencyOpt = currencyRepository.findByCode(environmentCurrencyCode);
         
@@ -48,16 +49,15 @@ public class Purchase {
             throw new DataBaseNotFoundException();
         }
         
-        Currency currency = currencyOpt.get();
-        PurchaseTransaction transaction = new PurchaseTransaction(transactionId, request.getAmount(), currency, request.getPurchaseDate(), request.getDescription());
+        purchase.setTransactionId(Utils.getNanoId());
+        purchase.setCurrency(currencyOpt.get());
+        
         
         log.debug("Salvando transação de compra");
-        purchaseTransactionRepository.save(transaction);
-        log.debug("Transação de compra salva com sucesso: {}", transaction);
+        purchaseTransactionRepository.save(purchase);
+        log.debug("Transação de compra salva com sucesso: {}", purchase.getTransactionId());
         
-        
-        StorePurchaseResponse response = new StorePurchaseResponse();
-        response.setTransactionId(transaction.getTransactionId());
-        return response;
+       
+        return purchase;
     }
 }

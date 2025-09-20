@@ -1,7 +1,7 @@
 package net.mycompany.commerce.purchase.store.consumer;
 
+import net.mycompany.commerce.purchase.domain.Purchase;
 import net.mycompany.commerce.purchase.mock.QueueManagerServiceMock;
-import net.mycompany.commerce.purchase.store.domain.Purchase;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseRequest;
 import net.mycompany.commerce.purchase.store.dto.StorePurchaseResponse;
 import org.junit.jupiter.api.BeforeEach;

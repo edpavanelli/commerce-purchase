@@ -25,13 +25,12 @@ public class QueueManagerServiceMock {
 	public String enqueue(StorePurchaseRequest request) {
 		
 		log.debug("Enqueuing purchase request: {}", request);
-        String transactionId = Utils.getNanoId();
+        //String transactionId = Utils.getNanoId();
         
-        log.debug("Generated transactionId: {}", transactionId);
-        queue.offer(new Message(transactionId, request));
+        queue.offer(new Message(request));
         
-        log.debug("Purchase request enqueued with transactionId: {}", transactionId);
-        return transactionId;
+        log.debug("Purchase request enqueued with statusCode: {}", "200");
+        return "200";
     }
 
     public Message take() throws InterruptedException {
@@ -39,9 +38,9 @@ public class QueueManagerServiceMock {
         return queue.take();
     }
 
-    public void putResponse(String transactionId, StorePurchaseResponse response) {
-    	log.debug("Storing response for transactionId {}: {}", transactionId, response);
-        responses.put(transactionId, response);
+    public void putResponse(StorePurchaseResponse response) {
+    	log.debug("Storing response for transactionId {}: {}", response.getTransactionId(), response);
+        responses.put(response.getTransactionId(), response);
     }
 
     public StorePurchaseResponse getResponse(String transactionId) {
@@ -49,5 +48,5 @@ public class QueueManagerServiceMock {
         return responses.get(transactionId);
     }
 
-    public record Message(String transactionId, StorePurchaseRequest request) {}
+    public record Message(StorePurchaseRequest request) {}
 }

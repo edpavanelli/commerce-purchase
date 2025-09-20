@@ -1,11 +1,26 @@
 package net.mycompany.commerce.purchase.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "currency_tb")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Currency implements Serializable {
 	
 	
@@ -29,27 +44,5 @@ public class Currency implements Serializable {
     @NotBlank
     private String country;
     
-    // No-argument constructor
-    public Currency() {
-		super();
-	}
-	
-    // All-argument constructor
-    public Currency(@Size(min = 3, max = 3) @NotBlank String code, @Size(max = 50) @NotBlank String name,
-			@Size(max = 50) @NotBlank String country) {
-		this.code = code;
-		this.name = name;
-		this.country = country;
-	}
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
 
 }

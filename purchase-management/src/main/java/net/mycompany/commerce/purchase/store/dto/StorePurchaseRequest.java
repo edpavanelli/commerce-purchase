@@ -8,8 +8,18 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.mycompany.commerce.purchase.model.Currency;
+import net.mycompany.commerce.purchase.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.validators.USDateTimeFormat;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class StorePurchaseRequest implements Serializable {
     @NotNull
     @Digits(integer = 13, fraction = 2, message = "Wrong amount format")
@@ -23,11 +33,5 @@ public class StorePurchaseRequest implements Serializable {
     @USDateTimeFormat
     private LocalDateTime purchaseDate;
 
-    // Getters and setters
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public LocalDateTime getPurchaseDate() { return purchaseDate; }
-    public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
+   
 }

@@ -13,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 
+import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
 import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
@@ -52,10 +53,14 @@ public class TreasuryExchangeRateInitializer {
                         pagination
                 ).subscribe(
                     exchangeRates -> {
-                        if (exchangeRates != null && !exchangeRates.isEmpty() && exchangeRates.get(0) != null) {
-                            cacheExchangeRate(country, exchangeRates.get(0).getExchangeRateAmount(), exchangeRates.get(0).getEffectiveDate());
+                        if (exchangeRates != null && !exchangeRates.isEmpty()) {
+                            for (var rate : exchangeRates) {
+                                if (rate != null) {
+                                    cacheExchangeRate(country, rate.getCurrency(), rate.getExchangeRateAmount(), rate.getEffectiveDate());
+                                }
+                            }
                         } else {
-                            cacheExchangeRate(country, null, null);
+                        	cacheExchangeRate(country, null, null, null);
                         }
                     },
                     error -> log.error("Error fetching exchange rate for country {}: {}", country, error.getMessage())
@@ -67,8 +72,8 @@ public class TreasuryExchangeRateInitializer {
     }
 
     @CachePut(value = "treasuryExchangeRateCache", key = "#country")
-    public void cacheExchangeRate(String country, BigDecimal exchangeRate, LocalDate effectiveDate) {
+    public void cacheExchangeRate(String country, Currency currency, BigDecimal exchangeRate, LocalDate effectiveDate) {
         // The cache will store a simple object or map with country, exchangeRate, effectiveDate
-        log.info("Cached exchange rate for {}: rate={}, date={}", country, exchangeRate, effectiveDate);
+        log.info("Cached exchange rate for {}: currency={}, rate={}, date={}", country, currency, exchangeRate, effectiveDate);
     }
 }

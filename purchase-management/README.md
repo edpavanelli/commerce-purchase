@@ -36,7 +36,8 @@ Currency conversion requirements
 ● If no currency conversion rate is available within 6 months equal to or before the purchase date, an error should be returned stating the purchase cannot be converted to the target currency.
 ● The converted purchase amount to the target currency should be rounded to two decimal places (i.e., cent).
 
-
+ASK ASK ASK ASK
+Can I assume that currency conversion requests for purchase transactions dated within the last six months are significantly more common than requests for transactions older than six months?”
 
 Entity:
 

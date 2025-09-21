@@ -38,6 +38,7 @@ Currency conversion requirements
 
 ASK ASK ASK ASK
 Can I assume that currency conversion requests for purchase transactions dated within the last six months are significantly more common than requests for transactions older than six months?”
+E posso assumir que o arredondamento do valor final é pra cima?
 
 Entity:
 

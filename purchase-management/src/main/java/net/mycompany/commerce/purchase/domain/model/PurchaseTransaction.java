@@ -2,6 +2,7 @@ package net.mycompany.commerce.purchase.domain.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -51,7 +52,7 @@ public class PurchaseTransaction implements Serializable {
 
     @Column(nullable = false)
     @NotNull
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
 
     @Column(length = 80)
     @Size(max = 80)

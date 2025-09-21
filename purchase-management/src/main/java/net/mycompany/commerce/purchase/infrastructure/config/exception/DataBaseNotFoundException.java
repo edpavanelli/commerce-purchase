@@ -1,14 +1,12 @@
 package net.mycompany.commerce.purchase.infrastructure.config.exception;
 
-public class DataBaseNotFoundException extends RuntimeException {
-    private final String code;
+public class DataBaseNotFoundException extends PurchaseExceptionsHandler {
+    
 
-    public DataBaseNotFoundException() {
-        //super(message);
-        this.code = "CURRENCY_NOT_FOUND";
+    public DataBaseNotFoundException(String message) {
+        super("NOT_FOUND", message);
+        
     }
 
-    public String getCode() {
-        return code;
-    }
+   
 }

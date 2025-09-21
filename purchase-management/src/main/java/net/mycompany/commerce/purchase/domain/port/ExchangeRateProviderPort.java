@@ -11,7 +11,12 @@ import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.T
 import reactor.core.publisher.Mono;
 
 public interface ExchangeRateProviderPort {
-	Mono<List<ExchangeRate>> getTreasuryExchangeRate(TreasuryExchangeRateFilterDto treasuryExchangeRateFilter, 
-			TreasuryExchangeRateSortDto treasuryExchangeRateSort,
-			PaginationFiltersDto paginationFilter);
+	
+	public Mono<List<ExchangeRate>> getTreasuryExchangeRateFromRestClient(TreasuryExchangeRateFilterDto treasuryExchangeRateFilter);
+	
+	void cacheExchangeRate(String country, List<ExchangeRate> exchangeRates); 
+	
+	List<ExchangeRate> getCachedExchangeRateList(String country);
+	
+	
 }

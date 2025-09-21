@@ -16,6 +16,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
 import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
+import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateSortDto;
 import net.mycompany.commerce.common.dto.PaginationFiltersDto;
@@ -24,6 +25,7 @@ import net.mycompany.commerce.common.dto.PaginationFiltersDto;
 public class TreasuryExchangeRateInitializer {
     private static final Logger log = LoggerFactory.getLogger(TreasuryExchangeRateInitializer.class);
 
+    /*
     @Value("${environment.default.cuntries.exchange}")
     private String countriesProperty;
 
@@ -47,20 +49,16 @@ public class TreasuryExchangeRateInitializer {
                     .pageNumber(1)
                     .pageSize(1)
                     .build();
-                exchangeRateProvider.getTreasuryExchangeRate(
+                exchangeRateProvider.getTreasuryExchangeRateFromRestClient(
                         filter,
                         TreasuryExchangeRateSortDto.EFFECTIVE_DATE,
                         pagination
                 ).subscribe(
                     exchangeRates -> {
                         if (exchangeRates != null && !exchangeRates.isEmpty()) {
-                            for (var rate : exchangeRates) {
-                                if (rate != null) {
-                                    cacheExchangeRate(country, rate.getCurrency(), rate.getExchangeRateAmount(), rate.getEffectiveDate());
-                                }
-                            }
+                        	cacheExchangeRate(country, exchangeRates);
                         } else {
-                        	cacheExchangeRate(country, null, null, null);
+                        	cacheExchangeRate(country, null);
                         }
                     },
                     error -> log.error("Error fetching exchange rate for country {}: {}", country, error.getMessage())
@@ -72,8 +70,9 @@ public class TreasuryExchangeRateInitializer {
     }
 
     @CachePut(value = "treasuryExchangeRateCache", key = "#country")
-    public void cacheExchangeRate(String country, Currency currency, BigDecimal exchangeRate, LocalDate effectiveDate) {
+    public void cacheExchangeRate(String country, List<ExchangeRate> exchangeRates) {
         // The cache will store a simple object or map with country, exchangeRate, effectiveDate
-        log.info("Cached exchange rate for {}: currency={}, rate={}, date={}", country, currency, exchangeRate, effectiveDate);
+        log.info("Cached exchange rate for {}: ExchangeRate={}", country, exchangeRates.toArray().toString());
     }
+    */
 }

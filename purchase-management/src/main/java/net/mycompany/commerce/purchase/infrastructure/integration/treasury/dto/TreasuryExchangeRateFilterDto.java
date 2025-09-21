@@ -1,5 +1,6 @@
 package net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class TreasuryExchangeRateFilterDto {
 
 	private String country;
-	private LocalDateTime requestDateFrom;
-	private LocalDateTime requestDateTo;
-	
+	private LocalDate requestDateFrom;
+	private LocalDate requestDateTo;
+	private TreasuryExchangeRateSortDto sortBy;
 }

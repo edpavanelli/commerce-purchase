@@ -2,6 +2,7 @@ package net.mycompany.commerce.purchase.application.store.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Digits;
@@ -31,7 +32,7 @@ public class StorePurchaseRequestDto{
 
     @NotNull(message = "invalid date pattern")
     @USDateTimeFormat
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
 
    
 }

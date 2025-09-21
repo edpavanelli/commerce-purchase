@@ -16,13 +16,13 @@ public class GlobalExceptionHandler {
                 .body("Invalid request format: " + ex.getMostSpecificCause().getMessage());
     }
 
-    @ExceptionHandler(DataBaseNotFoundException.class)
-    public ResponseEntity<ApiError> handleDataBaseNotFound(DataBaseNotFoundException ex) {
+    @ExceptionHandler(PurchaseExceptionsHandler.class)
+    public ResponseEntity<ApiError> handleDataBaseNotFound(PurchaseExceptionsHandler ex) {
         String traceId = MDC.get("traceId");
         ApiError error = new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getCode(),
-                "We are facing troubles, please contact the support team.",
+                ex.getMessage(),
                 traceId
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);

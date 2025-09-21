@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -30,23 +31,23 @@ public class StorePurchaseService {
 	
 	private static final Logger log = LoggerFactory.getLogger(StorePurchaseService.class);
 	
-    private final String environmentCurrencyCode;
     private final CurrencyRepository currencyRepository;
     private final PurchaseTransactionRepository purchaseTransactionRepository;
     private final PurchaseTransactionSubject purchaseTransactionSubject;
     private final TransactionObserver transactionObserver;
     private final PurchaseTransactionMapper purchaseTransactionMapper;
+    private final Environment environment;
 
     public StorePurchaseService(
         PurchaseTransactionRepository purchaseTransactionRepository,
         CurrencyRepository currencyRepository,
-        @Value("${environment.default.currency.code}") String environmentCurrencyCode,
+        Environment environment,
         PurchaseTransactionSubject purchaseTransactionSubject,
         TransactionObserver transactionObserver,
         PurchaseTransactionMapper purchaseTransactionMapper) {
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
-        this.environmentCurrencyCode = environmentCurrencyCode;
+        this.environment=environment; 
         this.purchaseTransactionSubject = purchaseTransactionSubject;
         this.transactionObserver = transactionObserver;
         this.purchaseTransactionSubject.addObserver(transactionObserver);
@@ -57,6 +58,8 @@ public class StorePurchaseService {
     @Transactional(rollbackFor = Exception.class)
     public StorePurchaseResponseDto storePurchase(StorePurchaseRequestDto request) {
     	
+    	String environmentCurrencyCode = environment.getProperty("environment.default.currency.code");
+    	
     	PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
     	
     	log.debug("Processando nova compra: {}", request);
@@ -65,7 +68,7 @@ public class StorePurchaseService {
         
         if (currencyOpt.isEmpty()) {
         	log.error("Moeda não encontrada no sistema: {}", environmentCurrencyCode);
-            throw new DataBaseNotFoundException();
+            throw new DataBaseNotFoundException(environment.getProperty("error.database.notfound"));
         }
         
       

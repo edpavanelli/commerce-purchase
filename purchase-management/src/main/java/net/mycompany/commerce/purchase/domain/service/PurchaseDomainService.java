@@ -1,101 +1,134 @@
 package net.mycompany.commerce.purchase.domain.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.cache.Cache;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.common.util.DateUtils;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
+import net.mycompany.commerce.purchase.infrastructure.config.exception.ApiServiceUnavaliableException;
+import net.mycompany.commerce.purchase.infrastructure.config.exception.PurchaseDomainException;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateSortDto;
-import net.mycompany.commerce.common.dto.PaginationFiltersDto;
+
 
 public class PurchaseDomainService {
+	
+	private static final Logger log = LoggerFactory.getLogger(PurchaseDomainService.class);
 
-    public static LocalDateTime getDateSixMonthsBack() {
-        return LocalDate.now().minusMonths(6).atStartOfDay();
+	private final String notLastSixMonthsErrorCode;
+	private final String notLastSixMonthsErrorMessage;
+	private final String treasuryServiceErrorMessage;
+	private final String currencyConversionParamNullErrorCode;
+	private final String currencyConversionParamNullErrorMessage;
+	private final ExchangeRateProviderPort exchangeRateProviderPort;
+	
+	public PurchaseDomainService(
+			ExchangeRateProviderPort providerPort,
+			@Value("${error.domain.exchange.notLastSixMonths.code}") String notLastSixMonthsErrorCode,
+			@Value("${error.domain.exchange.notLastSixMonths.message}") String notLastSixMonthsErrorMessage,
+			@Value("${error.domain.exchange.treasury.service.error}") String treasuryServiceErrorMessage,
+			@Value("${error.domain.exchange.null-params.code}") String currencyConversionParamNullErrorCode,
+			@Value("${error.domain.exchange.null-params.message}") String currencyConversionParamNullErrorMessage){
+		this.exchangeRateProviderPort = providerPort;
+		this.notLastSixMonthsErrorCode = notLastSixMonthsErrorCode;
+		this.notLastSixMonthsErrorMessage = notLastSixMonthsErrorMessage;
+		this.treasuryServiceErrorMessage = treasuryServiceErrorMessage;
+		this.currencyConversionParamNullErrorCode = currencyConversionParamNullErrorCode;
+		this.currencyConversionParamNullErrorMessage = currencyConversionParamNullErrorMessage;
+	}
+	
+
+    public BigDecimal currencyConversion(PurchaseTransaction purchaseTransaction, Currency currencyOut){
+    	
+    	List<ExchangeRate> exchangeRateList = null;
+    	
+    	if(DateUtils.isDateWithin6MonthsFromNow(purchaseTransaction.getPurchaseDate())) {
+    		
+    		//try on cache
+    		exchangeRateList = exchangeRateProviderPort.getCachedExchangeRateList(currencyOut.getCountry());
+    		
+    		//is a environment country but has no rates within the last 6 months
+    		if(exchangeRateList.isEmpty()) {
+    			throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
+    		}
+    		
+    		
+    		
+    	}
+    	
+    	if(exchangeRateList == null) {
+			//it's not a environment country or PurchaseDate is older than 6 months
+			try {
+				exchangeRateList = exchangeRateProviderPort.getTreasuryExchangeRateFromRestClient(
+                        
+                       TreasuryExchangeRateFilterDto.builder()
+                        .country(currencyOut.getCountry())
+                        .requestDateTo(purchaseTransaction.getPurchaseDate())
+                        .requestDateFrom(DateUtils.getDateSixMonthsBack(purchaseTransaction.getPurchaseDate()))
+                        .sortBy(TreasuryExchangeRateSortDto.EFFECTIVE_DATE)
+                        .build()).block();
+    			
+				//there's no exchange rate within the last 6 months for this country or this country doesn't exist in treasury service
+				if (exchangeRateList == null || exchangeRateList.isEmpty()) {
+					throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
+                } 
+				
+			}catch(Exception e) {
+				log.error("Exception fetching exchange rate for country {}: {}", currencyOut.getCountry(), e.getMessage());
+				throw new ApiServiceUnavaliableException(treasuryServiceErrorMessage);
+			}
+		}	
+    	
+    	
+    	for (ExchangeRate exchangeRate : exchangeRateList) {
+			
+    		//PurchaseDate must be grather then the effectiveDate from this element
+    		if(purchaseTransaction.getPurchaseDate().isAfter(exchangeRate.getEffectiveDate()) 
+    			||	purchaseTransaction.getPurchaseDate().isEqual(exchangeRate.getEffectiveDate())) {
+    			
+    			return calculateCurrencyConversion(purchaseTransaction.getAmount(), exchangeRate.getExchangeRateAmount());
+    			
+    		}
+    		
+		}
+    	
+    	//if PurchaseDate is lower then all the effectiveDate from the list
+    	throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
+    	
     }
+    	
+    	
+    	
+    	
+    			
+    	public BigDecimal calculateCurrencyConversion(BigDecimal originalAmount, BigDecimal exchangeRate) {
+    		
+            if (originalAmount == null) {
+            	throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
+            }
+            
+            if (exchangeRate == null) {
+            	throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
+            }
+            return originalAmount
+                    .multiply(exchangeRate)
+                    .setScale(2, RoundingMode.HALF_UP);
+        				
+    	}
+    
 
-    public static BigDecimal currencyConversion(
-            PurchaseTransaction purchaseTransaction,
-            Currency currencyOut,
-            BigDecimal purchaseAmountOut,
-            ExchangeRateProviderPort exchangeRateProvider,
-            Cache cache
-    ) {
-        LocalDateTime purchaseDate = purchaseTransaction.getPurchaseDate();
-        LocalDateTime sixMonthsBack = getDateSixMonthsBack();
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        String country = currencyOut.getCountry();
-
-        // Check if purchaseDate is within last 6 months
-        boolean isWithinSixMonths = !purchaseDate.isBefore(sixMonthsBack) && !purchaseDate.isAfter(now);
-        if (isWithinSixMonths) {
-            Cache.ValueWrapper wrapper = cache.get(country);
-            if (wrapper != null && wrapper.get() != null) {
-                Object cachedValue = wrapper.get();
-                List<ExchangeRate> exchangeRates;
-                if (cachedValue instanceof List) {
-                    exchangeRates = (List<ExchangeRate>) cachedValue;
-                } else if (cachedValue instanceof ExchangeRate) {
-                    exchangeRates = List.of((ExchangeRate) cachedValue);
-                } else {
-                    throw new RuntimeException("the purchase cannot be converted to the target currency");
-                }
-                ExchangeRate found = null;
-                for (ExchangeRate rate : exchangeRates) {
-                    if (rate != null && !purchaseDate.toLocalDate().isBefore(rate.getEffectiveDate())) {
-                        found = rate;
-                        break;
-                    }
-                }
-                if (found != null && found.getExchangeRateAmount() != null) {
-                    return purchaseTransaction.getAmount().multiply(found.getExchangeRateAmount());
-                } else {
-                    throw new RuntimeException("the purchase cannot be converted to the target currency");
-                }
-            } else {
-                throw new RuntimeException("the purchase cannot be converted to the target currency");
-            }
-        } else {
-            // Not in cache or not in last 6 months, call provider
-            TreasuryExchangeRateFilterDto filter = TreasuryExchangeRateFilterDto.builder()
-                    .country(country)
-                    .requestDateFrom(getDateSixMonthsBack(purchaseDate))
-                    .requestDateTo(purchaseDate)
-                    .build();
-            PaginationFiltersDto pagination = PaginationFiltersDto.builder()
-                    .pageNumber(1)
-                    .pageSize(10)
-                    .build();
-            List<ExchangeRate> exchangeRates = exchangeRateProvider.getTreasuryExchangeRate(
-                    filter,
-                    TreasuryExchangeRateSortDto.EFFECTIVE_DATE,
-                    pagination
-            ).block();
-            if (exchangeRates == null || exchangeRates.isEmpty()) {
-                throw new RuntimeException("the purchase cannot be converted to the target currency");
-            }
-            ExchangeRate found = null;
-            for (ExchangeRate rate : exchangeRates) {
-                if (rate != null && !purchaseDate.toLocalDate().isBefore(rate.getEffectiveDate())) {
-                    found = rate;
-                    break;
-                }
-            }
-            if (found != null && found.getExchangeRateAmount() != null) {
-                return purchaseTransaction.getAmount().multiply(found.getExchangeRateAmount());
-            } else {
-                throw new RuntimeException("the purchase cannot be converted to the target currency");
-            }
-        }
-    }
-
-    private static LocalDateTime getDateSixMonthsBack(LocalDateTime referenceDate) {
-        return referenceDate.toLocalDate().minusMonths(6).atStartOfDay();
-    }
+    
 
 }

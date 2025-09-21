@@ -1,16 +1,17 @@
 package net.mycompany.commerce.purchase.store.domain;
 
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.DataBaseNotFoundException;
 import net.mycompany.commerce.purchase.infrastructure.repository.CurrencyRepository;
 import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionRepository;
-import net.mycompany.commerce.purchase.domain.model.port.TransactionIdGenerator;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ class PurchaseTest {
     private TransactionObserver transactionObserver;
     private StorePurchaseService purchase;
     private PurchaseTransactionMapper purchaseTransactionMapper;
-    private TransactionIdGenerator transactionIdGenerator;
+    private TransactionIdGeneratorPort transactionIdGenerator;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +39,7 @@ class PurchaseTest {
         purchaseTransactionSubject = mock(PurchaseTransactionSubject.class);
         transactionObserver = mock(TransactionObserver.class);
         purchaseTransactionMapper = mock(PurchaseTransactionMapper.class);
-        transactionIdGenerator = mock(TransactionIdGenerator.class);
+        transactionIdGenerator = mock(TransactionIdGeneratorPort.class);
         purchase = new StorePurchaseService(
             purchaseTransactionRepository,
             currencyRepository,
@@ -52,7 +53,7 @@ class PurchaseTest {
 
     @Test
     void testStorePurchaseSuccess() {
-        StorePurchaseRequest request = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("100.00"))
             .description("Test purchase")
             .purchaseDate(LocalDateTime.now())
@@ -68,18 +69,18 @@ class PurchaseTest {
         var purchaseTransaction = mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class);
         when(purchaseTransactionMapper.toDomain(request)).thenReturn(purchaseTransaction);
         when(purchaseTransactionMapper.toDto(purchaseTransaction)).thenReturn(
-            StorePurchaseResponse.builder().transactionId("tx-123").build()
+            StorePurchaseResponseDto.builder().transactionId("tx-123").build()
         );
         when(purchaseTransactionRepository.save(any())).thenReturn(purchaseTransaction);
 
-        StorePurchaseResponse response = purchase.storePurchase(request);
+        StorePurchaseResponseDto response = purchase.storePurchase(request);
         assertNotNull(response);
         assertEquals("tx-123", response.getTransactionId());
     }
 
     @Test
     void testStorePurchaseCurrencyNotFound() {
-        StorePurchaseRequest request = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("100.00"))
             .description("Test purchase")
             .purchaseDate(LocalDateTime.now())

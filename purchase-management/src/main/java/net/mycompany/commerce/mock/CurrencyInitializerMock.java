@@ -10,12 +10,12 @@ import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.infrastructure.repository.CurrencyRepository;
 
 @Component
-public class CurrencyInitializer {
+public class CurrencyInitializerMock {
 
-    private static final Logger log = LoggerFactory.getLogger(CurrencyInitializer.class);
+    private static final Logger log = LoggerFactory.getLogger(CurrencyInitializerMock.class);
     private CurrencyRepository currencyRepository;
     
-    public CurrencyInitializer(CurrencyRepository currencyRepository) {
+    public CurrencyInitializerMock(CurrencyRepository currencyRepository) {
 		this.currencyRepository = currencyRepository;
 	}
     

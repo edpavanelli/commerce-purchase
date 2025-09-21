@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTimeFormat;
 import jakarta.validation.ConstraintViolation;
 
@@ -26,67 +26,67 @@ class StorePurchaseRequestValidationTest {
 
     @Test
     void testValidRequest() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("123.45"))
             .description("Valid description")
             .purchaseDate(java.time.LocalDateTime.of(2025, 9, 19, 14, 30, 0))
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     void testNullAmount() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(null)
             .description("desc")
             .purchaseDate(java.time.LocalDateTime.of(2025, 9, 19, 14, 30, 0))
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testNegativeAmount() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("-10.00"))
             .description("desc")
             .purchaseDate(java.time.LocalDateTime.of(2025, 9, 19, 14, 30, 0))
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testAmountTooManyDigits() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("12345678901234.56")) // 14 digits
             .description("desc")
             .purchaseDate(java.time.LocalDateTime.of(2025, 9, 19, 14, 30, 0))
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testDescriptionTooLong() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("10.00"))
             .description("a".repeat(51))
             .purchaseDate(java.time.LocalDateTime.of(2025, 9, 19, 14, 30, 0))
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
 
     @Test
     void testNullPurchaseDate() {
-        StorePurchaseRequest req = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("10.00"))
             .description("desc")
             .purchaseDate(null)
             .build();
-        Set<ConstraintViolation<StorePurchaseRequest>> violations = validator.validate(req);
+        Set<ConstraintViolation<StorePurchaseRequestDto>> violations = validator.validate(req);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("purchaseDate")));
     }
 }

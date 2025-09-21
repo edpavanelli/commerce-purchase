@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import net.mycompany.commerce.mock.ProducerMock;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;
 import net.mycompany.commerce.purchase.infrastructure.config.security.SecurityConfig;
 import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionAuditRepository;
@@ -57,8 +57,8 @@ class ProducerMockTest {
         String json = "{\"transactionId\":\"tx-789\"}"; // Simplified for brevity
 
         // Stub queueManager.enqueue to simulate audit save
-        Mockito.when(queueManager.enqueue(any(StorePurchaseRequest.class))).thenAnswer(invocation -> {
-            StorePurchaseRequest req = invocation.getArgument(0);
+        Mockito.when(queueManager.enqueue(any(StorePurchaseRequestDto.class))).thenAnswer(invocation -> {
+            StorePurchaseRequestDto req = invocation.getArgument(0);
             // Create a mock PurchaseTransactionAudit with expected values
             PurchaseTransactionAudit audit = Mockito.mock(PurchaseTransactionAudit.class);
             Mockito.when(audit.getOperation()).thenReturn("CREATE");
@@ -93,7 +93,7 @@ class ProducerMockTest {
 
     @Test
     void testGetResponseReady() throws Exception {
-        StorePurchaseResponse response = new StorePurchaseResponse();
+        StorePurchaseResponseDto response = new StorePurchaseResponseDto();
         response.setTransactionId("tx-789");
         when(queueManager.getResponse("tx-789")).thenReturn(response);
 

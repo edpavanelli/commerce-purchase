@@ -2,8 +2,8 @@ package net.mycompany.commerce.purchase.store.consumer;
 
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.consumer.PurchaseConsumer;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,12 +29,12 @@ class PurchaseConsumerTest {
 
     @Test
     void testStorePurchaseCallsDependencies() {
-        StorePurchaseRequest request = StorePurchaseRequest.builder()
+        StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new java.math.BigDecimal("100.00"))
             .description("desc")
             .purchaseDate(java.time.LocalDateTime.now())
             .build();
-        StorePurchaseResponse response = StorePurchaseResponse.builder()
+        StorePurchaseResponseDto response = StorePurchaseResponseDto.builder()
             .transactionId("tx-456")
             .build();
         when(purchaseService.storePurchase(request)).thenReturn(response);

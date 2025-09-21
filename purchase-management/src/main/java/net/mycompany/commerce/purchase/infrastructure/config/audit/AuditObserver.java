@@ -1,33 +1,35 @@
 package net.mycompany.commerce.purchase.infrastructure.config.audit;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
+import net.mycompany.commerce.purchase.application.port.out.AuditEventPublisher;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;
-import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionAuditRepository;
+
 
 import java.time.LocalDateTime;
 
 @Component
 public class AuditObserver implements TransactionObserver {
-    private final PurchaseTransactionAuditRepository auditRepository;
+	private final AuditEventPublisher eventPublisher;
 
-    public AuditObserver(PurchaseTransactionAuditRepository auditRepository) {
-        this.auditRepository = auditRepository;
+    public AuditObserver(AuditEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @TransactionalEventListener
     public void onPurchaseTransactionChanged(PurchaseTransaction transaction, AuditOperation operation) {
+
+        AuditEvent event = new AuditEvent(
+            transaction.getId().toString(),
+            operation.name(),
+            "SystemUser",  
+            LocalDateTime.now()
+        );
+
         
-    	PurchaseTransactionAudit audit = PurchaseTransactionAudit.builder()
-				.purchaseTransaction(transaction)
-				.operation(operation.name())
-				.changedBy("SystemUser") //should be replaced with actual user info
-				.changedDate(LocalDateTime.now())
-				.build();
-    	
-        auditRepository.save(audit);
+        eventPublisher.publishAuditEvent(event);
     }
 }

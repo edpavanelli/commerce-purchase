@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TreasuryExchangeRateResponse {
+public class TreasuryExchangeRateResponseDto {
 
 	
-	private List<ExchangeRate> exchangeRateList;
+	private List<ExchangeRateDto> data;
 	
 }

@@ -1,8 +1,8 @@
 package net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto;
 
-public enum TreasuryExchangeRateSortField {
+public enum TreasuryExchangeRateSortDto {
 	
 	COUNTRY,
-	REQUEST_DATE,
+	EFFECTIVE_DATE,
 
 }

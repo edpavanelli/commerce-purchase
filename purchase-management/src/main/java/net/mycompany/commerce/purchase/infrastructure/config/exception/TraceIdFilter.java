@@ -10,14 +10,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import net.mycompany.commerce.purchase.domain.model.port.TransactionIdGenerator;
+import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 
 @Component
 public class TraceIdFilter extends OncePerRequestFilter {
 	
-	private final TransactionIdGenerator idGenerator;
+	private final TransactionIdGeneratorPort idGenerator;
 	
-		public TraceIdFilter(TransactionIdGenerator idGenerator) {	
+		public TraceIdFilter(TransactionIdGeneratorPort idGenerator) {	
 			this.idGenerator = idGenerator;
 		}
 	

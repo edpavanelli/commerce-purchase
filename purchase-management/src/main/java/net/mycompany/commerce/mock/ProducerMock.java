@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 
 @RestController
@@ -34,7 +34,7 @@ public class ProducerMock {
 
     // Recebe compra e enfileira
     @PostMapping(path = "/store" , consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Map<String, String>> enqueuePurchase(@RequestBody StorePurchaseRequest purchase) {
+    public ResponseEntity<Map<String, String>> enqueuePurchase(@RequestBody StorePurchaseRequestDto purchase) {
     	
     	log.debug("Received purchase request: {}", purchase);
     	
@@ -47,10 +47,10 @@ public class ProducerMock {
 
     // Consulta resultado (reply-to)
     @GetMapping("/{transactionId}")
-    public ResponseEntity<StorePurchaseResponse> getResponse(@PathVariable("transactionId") String transactionId) {
+    public ResponseEntity<StorePurchaseResponseDto> getResponse(@PathVariable("transactionId") String transactionId) {
     	log.debug("Checking response for transactionId: {}", transactionId);
         
-    	StorePurchaseResponse result = queueManager.getResponse(transactionId);
+    	StorePurchaseResponseDto result = queueManager.getResponse(transactionId);
         
     	log.debug("Response for transactionId {}: {}", transactionId, result);
     	

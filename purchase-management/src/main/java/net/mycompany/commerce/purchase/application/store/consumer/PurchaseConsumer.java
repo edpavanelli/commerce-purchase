@@ -15,8 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
@@ -74,11 +74,11 @@ public class PurchaseConsumer {
         }
     }
 
-    public void storePurchase(@Valid StorePurchaseRequest request) {
+    public void storePurchase(@Valid StorePurchaseRequestDto request) {
     	
     	log.debug("Processando compra: {}", request);
     		
-    	StorePurchaseResponse resp = purchaseService.storePurchase(request);
+    	StorePurchaseResponseDto resp = purchaseService.storePurchase(request);
         
         log.debug("Armazenando resposta para a compra: {}", resp);
         queueManager.putResponse(resp);

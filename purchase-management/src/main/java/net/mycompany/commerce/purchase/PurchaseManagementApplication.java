@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-@ComponentScan(basePackages = "net.mycompany.commerce")
+@ComponentScan(basePackages = {"net.mycompany.commerce.mock", "net.mycompany.commerce.purchase"})
 public class PurchaseManagementApplication {
 
 

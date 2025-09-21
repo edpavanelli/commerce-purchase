@@ -31,7 +31,7 @@ public class Currency implements Serializable {
 
     @Column(length = 3, nullable = false)
     @Size(min = 3, max = 3)
-    @NotBlank
+    // should be @NotBlank
     private String code;
 
     @Column(length = 50, nullable = false)

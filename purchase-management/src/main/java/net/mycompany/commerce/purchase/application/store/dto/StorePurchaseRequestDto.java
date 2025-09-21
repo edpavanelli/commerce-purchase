@@ -20,7 +20,7 @@ import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTim
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StorePurchaseRequest{
+public class StorePurchaseRequestDto{
     @NotNull
     @Digits(integer = 13, fraction = 2, message = "Wrong amount format")
     @Positive(message = "Amount must be positive")

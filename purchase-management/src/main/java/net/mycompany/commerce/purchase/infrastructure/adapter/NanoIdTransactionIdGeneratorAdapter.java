@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
-import net.mycompany.commerce.purchase.domain.model.port.TransactionIdGenerator;
+import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 
 @Component
-public class NanoIdTransactionIdGenerator implements TransactionIdGenerator {
+public class NanoIdTransactionIdGeneratorAdapter implements TransactionIdGeneratorPort {
 	
 	private static final char[] ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final int SIZE = 15;

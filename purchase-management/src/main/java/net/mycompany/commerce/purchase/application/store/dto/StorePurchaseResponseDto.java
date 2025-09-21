@@ -16,7 +16,7 @@ import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StorePurchaseResponse {
+public class StorePurchaseResponseDto {
     private String transactionId;
 
     

@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 
 @Service
 public class QueueManagerServiceMock {
@@ -19,9 +19,9 @@ public class QueueManagerServiceMock {
 	private static final Logger log = LoggerFactory.getLogger(QueueManagerServiceMock.class);
 	
 	private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
-    private final Map<String, StorePurchaseResponse> responses = new ConcurrentHashMap<>();
+    private final Map<String, StorePurchaseResponseDto> responses = new ConcurrentHashMap<>();
 
-	public String enqueue(StorePurchaseRequest request) {
+	public String enqueue(StorePurchaseRequestDto request) {
 		
 		log.debug("Enqueuing purchase request: {}", request);
         //String transactionId = Utils.getNanoId();
@@ -37,15 +37,15 @@ public class QueueManagerServiceMock {
         return queue.take();
     }
 
-    public void putResponse(StorePurchaseResponse response) {
+    public void putResponse(StorePurchaseResponseDto response) {
     	log.debug("Storing response for transactionId {}: {}", response.getTransactionId(), response);
         responses.put(response.getTransactionId(), response);
     }
 
-    public StorePurchaseResponse getResponse(String transactionId) {
+    public StorePurchaseResponseDto getResponse(String transactionId) {
     	log.debug("Retrieving response for transactionId: {}", transactionId);
         return responses.get(transactionId);
     }
 
-    public record Message(StorePurchaseRequest request) {}
+    public record Message(StorePurchaseRequestDto request) {}
 }

@@ -6,10 +6,11 @@ H2
 autenticação segurança
 actuator para observabilidade
 difusor de logs
-auditoria
+auditoria (pelo actuator??)
 swagger
 circuitbreaker (resilience)
 filas e topicos
+
 
 executar o https://fiscaldata.treasury.gov/datasets/treasury-reporting-rates-exchange/treasury-reporting-rates-of-exchange quando subir a aplicação e salvar em um redis(h2 no caso)
 

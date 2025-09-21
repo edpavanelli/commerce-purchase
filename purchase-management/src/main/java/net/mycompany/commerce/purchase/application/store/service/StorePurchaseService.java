@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequest;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponse;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.domain.model.port.TransactionIdGenerator;
+import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperation;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
@@ -35,7 +35,7 @@ public class StorePurchaseService {
     private final PurchaseTransactionSubject purchaseTransactionSubject;
     private final TransactionObserver transactionObserver;
     private final PurchaseTransactionMapper purchaseTransactionMapper;
-    private final TransactionIdGenerator idGenerator;
+    private final TransactionIdGeneratorPort idGenerator;
 
     public StorePurchaseService(
         PurchaseTransactionRepository purchaseTransactionRepository,
@@ -44,7 +44,7 @@ public class StorePurchaseService {
         PurchaseTransactionSubject purchaseTransactionSubject,
         TransactionObserver transactionObserver,
         PurchaseTransactionMapper purchaseTransactionMapper,
-        TransactionIdGenerator idGenerator) {
+        TransactionIdGeneratorPort idGenerator) {
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
         this.environmentCurrencyCode = environmentCurrencyCode;
@@ -56,7 +56,7 @@ public class StorePurchaseService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public StorePurchaseResponse storePurchase(StorePurchaseRequest request) {
+    public StorePurchaseResponseDto storePurchase(StorePurchaseRequestDto request) {
     	
     	PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
     	
@@ -77,7 +77,7 @@ public class StorePurchaseService {
         purchaseTransactionRepository.save(purchaseTransaction);
         log.debug("Transação de compra salva com sucesso: {}", purchaseTransaction.getTransactionId());
 
-        StorePurchaseResponse response = purchaseTransactionMapper.toDto(purchaseTransaction);
+        StorePurchaseResponseDto response = purchaseTransactionMapper.toDto(purchaseTransaction);
         
         TransactionSynchronizationManager.registerSynchronization(
         	    new TransactionSynchronization() {

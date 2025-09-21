@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 
 @Entity
 @Table(name = "purchase_transaction_tb")
@@ -33,9 +35,8 @@ public class PurchaseTransaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, updatable = false)
-    @NotNull
-    private String transactionId;
+    @Embedded
+    private TransactionId transactionId;
 
     @Column(precision = 15, scale = 2, nullable = false)
     @Digits(integer = 13, fraction = 2)

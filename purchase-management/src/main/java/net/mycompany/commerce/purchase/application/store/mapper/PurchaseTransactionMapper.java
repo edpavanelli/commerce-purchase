@@ -5,12 +5,21 @@ import org.springframework.stereotype.Component;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
+import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 
 @Component
 public class PurchaseTransactionMapper {
+	
+	private final TransactionIdGeneratorPort idGenerator;
+	
+	public PurchaseTransactionMapper(TransactionIdGeneratorPort idGenerator) {	
+		this.idGenerator = idGenerator;
+	}
+	
     public PurchaseTransaction toDomain(StorePurchaseRequestDto dto) {
     	return PurchaseTransaction.builder()
-				.transactionId(null)
+				.transactionId(new TransactionId(idGenerator.nextId()))
 				.amount(dto.getAmount())
 				.purchaseDate(dto.getPurchaseDate())
 				.description(dto.getDescription())
@@ -19,7 +28,7 @@ public class PurchaseTransactionMapper {
 
     public StorePurchaseResponseDto toDto(PurchaseTransaction purchaseTransaction) {
        		return StorePurchaseResponseDto.builder()
-				.transactionId(purchaseTransaction.getTransactionId())
+				.transactionId(purchaseTransaction.getTransactionId().getValue())
 				.build();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
@@ -35,7 +36,6 @@ public class StorePurchaseService {
     private final PurchaseTransactionSubject purchaseTransactionSubject;
     private final TransactionObserver transactionObserver;
     private final PurchaseTransactionMapper purchaseTransactionMapper;
-    private final TransactionIdGeneratorPort idGenerator;
 
     public StorePurchaseService(
         PurchaseTransactionRepository purchaseTransactionRepository,
@@ -43,8 +43,7 @@ public class StorePurchaseService {
         @Value("${environment.default.currency.code}") String environmentCurrencyCode,
         PurchaseTransactionSubject purchaseTransactionSubject,
         TransactionObserver transactionObserver,
-        PurchaseTransactionMapper purchaseTransactionMapper,
-        TransactionIdGeneratorPort idGenerator) {
+        PurchaseTransactionMapper purchaseTransactionMapper) {
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
         this.environmentCurrencyCode = environmentCurrencyCode;
@@ -52,7 +51,7 @@ public class StorePurchaseService {
         this.transactionObserver = transactionObserver;
         this.purchaseTransactionSubject.addObserver(transactionObserver);
         this.purchaseTransactionMapper = purchaseTransactionMapper;
-        this.idGenerator = idGenerator;
+        
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -69,7 +68,7 @@ public class StorePurchaseService {
             throw new DataBaseNotFoundException();
         }
         
-        purchaseTransaction.setTransactionId(idGenerator.nextId());
+      
         purchaseTransaction.setCurrency(currencyOpt.get());
         
         
@@ -84,7 +83,13 @@ public class StorePurchaseService {
         	        @Override
         	        public void afterCommit() {
         	            CompletableFuture.runAsync(() ->
-        	            purchaseTransactionSubject.notifyObserversOnPurchaseAsync(purchaseTransaction, AuditOperation.CREATE));
+        	            purchaseTransactionSubject.notifyObserversOnPurchaseAsync(AuditEvent.builder()
+			            		.transactionId(purchaseTransaction.getTransactionId())
+			            		.operation(AuditOperation.CREATE)
+			            		.changedBy("SystemUser")
+			            		.changedDate(java.time.LocalDateTime.now())
+			            		.build())
+			            );
         	        }
         	    }
         	);

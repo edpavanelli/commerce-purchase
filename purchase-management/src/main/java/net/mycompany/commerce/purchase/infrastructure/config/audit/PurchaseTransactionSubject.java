@@ -2,6 +2,7 @@ package net.mycompany.commerce.purchase.infrastructure.config.audit;
 
 import org.springframework.stereotype.Component;
 
+import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 
 import org.springframework.scheduling.annotation.Async;
@@ -24,16 +25,16 @@ public class PurchaseTransactionSubject {
         observers.remove(observer);
     }
 
-    public void notifyObserversOnPurchase(PurchaseTransaction transaction, AuditOperation operation) {
+    public void notifyObserversOnPurchase(AuditEvent event) {
         for (TransactionObserver observer : observers) {
-            observer.onPurchaseTransactionChanged(transaction, operation);
+            observer.onPurchaseTransactionChanged(event);
         }
     }
 
     //@Async
-    public void notifyObserversOnPurchaseAsync(PurchaseTransaction transaction, AuditOperation operation) {
+    public void notifyObserversOnPurchaseAsync(AuditEvent event) {
         try {
-            notifyObserversOnPurchase(transaction, operation);
+            notifyObserversOnPurchase(event);
         } catch (Exception e) {
             log.error("Async audit notification failed", e);
         }

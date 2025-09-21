@@ -41,7 +41,7 @@ public class Currency implements Serializable {
 
     @Column(length = 50, nullable = false)
     @Size(max = 50)
-    @NotBlank
+    @NotBlank // should be an Entity
     private String country;
     
 

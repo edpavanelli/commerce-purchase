@@ -1,7 +1,7 @@
 package net.mycompany.commerce.purchase.infrastructure.config.audit;
 
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 
 public interface TransactionObserver {
-    void onPurchaseTransactionChanged(PurchaseTransaction transaction, AuditOperation operation);
+    void onPurchaseTransactionChanged(AuditEvent event);
 }

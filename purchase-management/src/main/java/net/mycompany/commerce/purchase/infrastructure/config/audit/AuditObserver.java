@@ -20,15 +20,7 @@ public class AuditObserver implements TransactionObserver {
 
     @Override
     @TransactionalEventListener
-    public void onPurchaseTransactionChanged(PurchaseTransaction transaction, AuditOperation operation) {
-
-        AuditEvent event = new AuditEvent(
-            transaction.getId().toString(),
-            operation.name(),
-            "SystemUser",  
-            LocalDateTime.now()
-        );
-
+    public void onPurchaseTransactionChanged(AuditEvent event) {
         
         eventPublisher.publishAuditEvent(event);
     }

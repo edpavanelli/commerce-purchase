@@ -36,7 +36,8 @@ public class StorePurchaseService {
     private final PurchaseTransactionSubject purchaseTransactionSubject;
     private final TransactionObserver transactionObserver;
     private final PurchaseTransactionMapper purchaseTransactionMapper;
-    private final Environment environment;
+    private final String dataBaseNotFoundMessage;
+    private final String defaultCurrencyCode;
 
     public StorePurchaseService(
         PurchaseTransactionRepository purchaseTransactionRepository,
@@ -44,10 +45,13 @@ public class StorePurchaseService {
         Environment environment,
         PurchaseTransactionSubject purchaseTransactionSubject,
         TransactionObserver transactionObserver,
-        PurchaseTransactionMapper purchaseTransactionMapper) {
+        PurchaseTransactionMapper purchaseTransactionMapper,
+        @Value("${error.database.notfound.message}") String dataBaseNotFoundMessage,
+        @Value("${environment.default.currency.code}") String defaultCurrencyCode){
         this.currencyRepository = currencyRepository;
         this.purchaseTransactionRepository = purchaseTransactionRepository;
-        this.environment=environment; 
+        this.dataBaseNotFoundMessage=dataBaseNotFoundMessage; 
+        this.defaultCurrencyCode=defaultCurrencyCode;
         this.purchaseTransactionSubject = purchaseTransactionSubject;
         this.transactionObserver = transactionObserver;
         this.purchaseTransactionSubject.addObserver(transactionObserver);
@@ -58,17 +62,15 @@ public class StorePurchaseService {
     @Transactional(rollbackFor = Exception.class)
     public StorePurchaseResponseDto storePurchase(StorePurchaseRequestDto request) {
     	
-    	String environmentCurrencyCode = environment.getProperty("environment.default.currency.code");
-    	
     	PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
     	
     	log.debug("Processando nova compra: {}", request);
-    	log.debug("Usando moeda padrão do sistema: {}", environmentCurrencyCode);
-        Optional<Currency> currencyOpt = currencyRepository.findByCode(environmentCurrencyCode);
+    	log.debug("Usando moeda padrão do sistema: {}", defaultCurrencyCode);
+        Optional<Currency> currencyOpt = currencyRepository.findByCode(defaultCurrencyCode);
         
         if (currencyOpt.isEmpty()) {
-        	log.error("Moeda não encontrada no sistema: {}", environmentCurrencyCode);
-            throw new DataBaseNotFoundException(environment.getProperty("error.database.notfound"));
+        	log.error("Moeda não encontrada no sistema: {}", defaultCurrencyCode);
+            throw new DataBaseNotFoundException(dataBaseNotFoundMessage);
         }
         
       

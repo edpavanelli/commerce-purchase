@@ -11,9 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.common.util.DateUtils;
+import net.mycompany.commerce.common.util.StringUtils;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
@@ -22,7 +24,7 @@ import net.mycompany.commerce.purchase.infrastructure.config.exception.PurchaseD
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateSortDto;
 
-
+@Service
 public class PurchaseDomainService {
 	
 	private static final Logger log = LoggerFactory.getLogger(PurchaseDomainService.class);
@@ -52,18 +54,22 @@ public class PurchaseDomainService {
 
     public BigDecimal currencyConversion(PurchaseTransaction purchaseTransaction, Currency currencyOut){
     	
+    	
+    	if(purchaseTransaction == null) {
+			throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
+		}
+    	
+    	if(currencyOut == null || currencyOut.getCountry() == null) {
+    		throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
+    	}
+    	
     	List<ExchangeRate> exchangeRateList = null;
     	
     	if(DateUtils.isDateWithin6MonthsFromNow(purchaseTransaction.getPurchaseDate())) {
     		
+    		log.debug("getting exchange rates from cache for country {}", currencyOut.getCountry());
     		//try on cache
-    		exchangeRateList = exchangeRateProviderPort.getCachedExchangeRateList(currencyOut.getCountry());
-    		
-    		//is a environment country but has no rates within the last 6 months
-    		if(exchangeRateList.isEmpty()) {
-    			throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
-    		}
-    		
+    		exchangeRateList = exchangeRateProviderPort.getCachedExchangeRateList(StringUtils.capitalizeFirstLetter(currencyOut.getCountry()));
     		
     		
     	}
@@ -71,6 +77,9 @@ public class PurchaseDomainService {
     	if(exchangeRateList == null) {
 			//it's not a environment country or PurchaseDate is older than 6 months
 			try {
+				
+				log.debug("fetching exchange rates from treasury service for country {}", currencyOut.getCountry());
+				
 				exchangeRateList = exchangeRateProviderPort.getTreasuryExchangeRateFromRestClient(
                         
                        TreasuryExchangeRateFilterDto.builder()
@@ -91,13 +100,22 @@ public class PurchaseDomainService {
 			}
 		}	
     	
+    	//is a environment country but has no rates within the last 6 months
+		if(exchangeRateList.isEmpty()) {
+			throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
+		}
+		
+    	
+    	log.debug("exchange rates found: {}", exchangeRateList.size());
     	
     	for (ExchangeRate exchangeRate : exchangeRateList) {
 			
+    		log.debug("checking exchange rate {} and effective date {} for purchase date {}", exchangeRate.getExchangeRateAmount(),exchangeRate.getEffectiveDate());	
     		//PurchaseDate must be grather then the effectiveDate from this element
     		if(purchaseTransaction.getPurchaseDate().isAfter(exchangeRate.getEffectiveDate()) 
     			||	purchaseTransaction.getPurchaseDate().isEqual(exchangeRate.getEffectiveDate())) {
     			
+    			log.debug("using exchange rate with effective date {} for purchase date {}", exchangeRate.getEffectiveDate(), purchaseTransaction.getPurchaseDate());
     			return calculateCurrencyConversion(purchaseTransaction.getAmount(), exchangeRate.getExchangeRateAmount());
     			
     		}
@@ -115,6 +133,7 @@ public class PurchaseDomainService {
     			
     	public BigDecimal calculateCurrencyConversion(BigDecimal originalAmount, BigDecimal exchangeRate) {
     		
+    		
             if (originalAmount == null) {
             	throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
             }
@@ -122,6 +141,9 @@ public class PurchaseDomainService {
             if (exchangeRate == null) {
             	throw new PurchaseDomainException(currencyConversionParamNullErrorCode, currencyConversionParamNullErrorMessage);
             }
+            
+            
+            
             return originalAmount
                     .multiply(exchangeRate)
                     .setScale(2, RoundingMode.HALF_UP);

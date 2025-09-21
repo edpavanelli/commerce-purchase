@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import net.mycompany.commerce.common.dto.PaginationFiltersDto;
 import net.mycompany.commerce.common.util.DateUtils;
+import net.mycompany.commerce.common.util.StringUtils;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
 import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
@@ -43,16 +46,19 @@ public class TreasuryExchangeRateProvider implements ExchangeRateProviderPort {
 	private final WebClient webClient;
     private final TreasuryApiProperties properties;
     private final ExchangeRateMapper exchangeRateMapper;
+    private final CacheManager cacheManager;
     
 
     public TreasuryExchangeRateProvider(Environment env,
     		WebClientFactory webClientFactory, 
     		TreasuryApiProperties properties,
-    		ExchangeRateMapper exchangeRateMapper) {
+    		ExchangeRateMapper exchangeRateMapper,
+    		CacheManager cacheManager) {
     	this.env = env;
         this.properties = properties;
         this.webClient = webClientFactory.createJsonWebClient(properties);
         this.exchangeRateMapper = exchangeRateMapper;
+        this.cacheManager = cacheManager;
     }
 	
 	
@@ -72,7 +78,7 @@ public class TreasuryExchangeRateProvider implements ExchangeRateProviderPort {
 			                "effective_date:lte:%s,effective_date:gte:%s,country:eq:%s",
 			                treasuryExchangeRateFilter.getRequestDateTo().format(TreasuryApiConstants.TREASURY_DATE_FORMATTER),
 			                treasuryExchangeRateFilter.getRequestDateFrom().format(TreasuryApiConstants.TREASURY_DATE_FORMATTER),
-			                treasuryExchangeRateFilter.getCountry()
+			                StringUtils.capitalizeFirstLetter(treasuryExchangeRateFilter.getCountry())
 			            ))
 			            // ordenação
 			            .queryParam("sort", "-" + treasuryExchangeRateFilter.getSortBy().name().toLowerCase())
@@ -104,9 +110,9 @@ public class TreasuryExchangeRateProvider implements ExchangeRateProviderPort {
                         filter).block();
                 		
                 if (exchangeRateList != null && !exchangeRateList.isEmpty()) {
-                	cacheExchangeRate(country, exchangeRateList);
+                	cacheExchangeRate(StringUtils.capitalizeFirstLetter(country), exchangeRateList);
                 } else {
-                	cacheExchangeRate(country, new ArrayList<>());
+                	cacheExchangeRate(StringUtils.capitalizeFirstLetter(country), new ArrayList<>());
                 }	
                 
             } catch (Exception e) {
@@ -121,9 +127,17 @@ public class TreasuryExchangeRateProvider implements ExchangeRateProviderPort {
         log.info("Cached exchange rate for {}: ExchangeRate={}", country, exchangeRateList.toArray());
     }
 
-	@Cacheable(value = "treasuryExchangeRateCache", key = "#country")
+	
 	public List<ExchangeRate> getCachedExchangeRateList(String country) {
-		return null;
-	}
+		Cache cache = cacheManager.getCache("treasuryExchangeRateCache");
+		
+        if (cache != null) {
+            return cache.get(country, List.class);
+        }
+        
+        return null;
+        
+    }
+	
 
 }

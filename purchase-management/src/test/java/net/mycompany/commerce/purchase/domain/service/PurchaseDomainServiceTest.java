@@ -86,7 +86,7 @@ class PurchaseDomainServiceTest {
         PurchaseTransaction tx = PurchaseTransaction.builder().amount(new BigDecimal("10.00")).currency(currency).purchaseDate(LocalDate.now()).build();
         when(cacheService.getCachedExchangeRateList(any())).thenReturn(null);
         when(providerPort.getTreasuryExchangeRateFromRestClient(any())).thenReturn(Mono.just(Collections.emptyList()));
-        assertThrows(ApiServiceUnavaliableException.class, () -> service.currencyConversion(tx, currency));
+        assertThrows(PurchaseDomainException.class, () -> service.currencyConversion(tx, currency));
     }
 
     @Test

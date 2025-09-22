@@ -10,7 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.github.springwolf.core.asyncapi.annotations.AsyncListener;
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
@@ -19,7 +20,6 @@ import net.mycompany.commerce.purchase.application.store.service.StorePurchaseSe
 
 @Service
 @Validated
-@Tag(name = "Purchase Consumer", description = "Consumes purchase messages from the queue and processes store purchases.")
 public class PurchaseConsumer {
 	private static final Logger log = LoggerFactory.getLogger(PurchaseConsumer.class);
 
@@ -65,14 +65,20 @@ public class PurchaseConsumer {
             }
         }
     }
-
+    
+    
+    @AsyncListener(
+            operation = @AsyncOperation(
+                channelName = "purchase-request-queue",
+                description = "Queue of purchase requests",
+                payloadType = StorePurchaseRequestDto.class
+            )
+        )
     public void storePurchase(@Valid StorePurchaseRequestDto request) {
     	
     	log.debug("Processing purchase: {}", request);
     		
-    	StorePurchaseResponseDto resp = purchaseService.storePurchase(request);
+    	purchaseService.storePurchase(request);
         
-        log.debug("Storing response for the purchase: {}", resp);
-        queueManager.putResponse(resp);
     }
 }

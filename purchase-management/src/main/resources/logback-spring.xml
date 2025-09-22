@@ -37,19 +37,19 @@
     <!-- Package-specific log levels -->
     <logger name="net.mycompany.commerce.purchase" level="DEBUG"/>
     <logger name="org.hibernate.SQL" level="ERROR"/>
-    <logger name="reactor.netty.http.client" level="INFO"/>
-    <logger name="org.springframework.security" level="TRACE"/>
-    <logger name="org.springframework.security.web" level="TRACE"/>
-    <logger name="org.springframework.security.authentication" level="TRACE"/>
-    <logger name="org.springframework.security.access" level="TRACE"/>
-    <logger name="org.springdoc" level="TRACE"/>
-	<logger name="io.swagger.v3" level="TRACE"/>
-	<logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="TRACE"/>
-	<logger name="org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler" level="TRACE"/>
-	<logger name="org.springframework.web.servlet.DispatcherServlet" level="TRACE"/>
-	<logger name="org.springframework.web" level="TRACE"/>
-    <logger name="org.springframework.web.reactive.function.client" level="TRACE"/>
-	<logger name="org.springframework.web.filter" level="TRACE"/>
+    <logger name="reactor.netty.http.client" level="DEBUG"/>
+    <logger name="org.springframework.security" level="DEBUG"/>
+    <logger name="org.springframework.security.web" level="DEBUG"/>
+    <logger name="org.springframework.security.authentication" level="DEBUG"/>
+    <logger name="org.springframework.security.access" level="DEBUG"/>
+    <logger name="org.springdoc" level="DEBUG"/>
+	<logger name="io.swagger.v3" level="DEBUG"/>
+	<logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="DEBUG"/>
+	<logger name="org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler" level="DEBUG"/>
+	<logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG"/>
+	<logger name="org.springframework.web" level="DEBUG"/>
+    <logger name="org.springframework.web.reactive.function.client" level="DEBUG"/>
+	<logger name="org.springframework.web.filter" level="DEBUG"/>
 	
 
 </configuration>

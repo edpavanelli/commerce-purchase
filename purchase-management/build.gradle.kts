@@ -45,6 +45,8 @@ dependencies {
     implementation("org.glassfish:jakarta.el:4.0.2")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+    implementation("io.github.springwolf:springwolf-core:1.17.0")
+    implementation("io.github.springwolf:springwolf-ui:1.17.0")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")

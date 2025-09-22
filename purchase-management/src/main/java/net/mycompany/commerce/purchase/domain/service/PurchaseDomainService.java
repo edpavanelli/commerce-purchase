@@ -94,7 +94,9 @@ public class PurchaseDomainService {
 				if (exchangeRateList == null || exchangeRateList.isEmpty()) {
 					throw new PurchaseDomainException(notLastSixMonthsErrorCode, notLastSixMonthsErrorMessage);
                 } 
-				
+			
+			} catch (PurchaseDomainException ex) {
+		        throw ex;
 			}catch(Exception e) {
 				log.error("Exception fetching exchange rate for country {}: {}", currencyOut.getCountry(), e.getMessage());
 				throw new ApiServiceUnavaliableException(treasuryServiceErrorMessage);

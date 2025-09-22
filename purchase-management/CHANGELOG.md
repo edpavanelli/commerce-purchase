@@ -1,7 +1,19 @@
 
-when right after the spring boot application starts (or during the application startup but at the end) I need to insert into the Currency table the follow values:
-code = 'USD'
-name = 'United States Dollar'
-country ='United States' 
+ok, now I need new junit tests to the new implementation i've made. 
 
-so the H2 database will have this registry right after the the application starts ends 
+we need to test:
+TreasuryExchangeRateProvider
+PurchaseDomainService
+CurrencyExchangeService
+ExchangeController
+DateUtils
+StringUtils
+KafkaAuditEventPublisher
+ExchangeRateProviderPort
+TransactionIdGeneratorPort
+CacheService
+
+please test all testable methods from this classes
+test all posible scenarious, the good and all bad (exceptions, jakarta validations, etc...)
+
+create the ExchangeController tests according to the  PurchaseDomainService and CurrencyExchangeService too

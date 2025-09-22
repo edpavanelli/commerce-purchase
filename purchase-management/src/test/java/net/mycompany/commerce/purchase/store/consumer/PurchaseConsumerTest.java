@@ -32,7 +32,7 @@ class PurchaseConsumerTest {
         StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new java.math.BigDecimal("100.00"))
             .description("desc")
-            .purchaseDate(java.time.LocalDateTime.now())
+            .purchaseDate(java.time.LocalDate.now())
             .build();
         StorePurchaseResponseDto response = StorePurchaseResponseDto.builder()
             .transactionId("tx-456")

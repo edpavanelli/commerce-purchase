@@ -18,7 +18,9 @@ import net.mycompany.commerce.common.util.DateUtils;
 import net.mycompany.commerce.common.util.StringUtils;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
+import net.mycompany.commerce.purchase.domain.valueobject.ConvertedCurrency;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
+import net.mycompany.commerce.purchase.infrastructure.config.cache.CacheService;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.ApiServiceUnavaliableException;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.PurchaseDomainException;
 import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
@@ -35,15 +37,18 @@ public class PurchaseDomainService {
 	private final String currencyConversionParamNullErrorCode;
 	private final String currencyConversionParamNullErrorMessage;
 	private final ExchangeRateProviderPort exchangeRateProviderPort;
+	private final CacheService cacheService;
 	
 	public PurchaseDomainService(
 			ExchangeRateProviderPort providerPort,
+			CacheService cacheService,
 			@Value("${error.domain.exchange.notLastSixMonths.code}") String notLastSixMonthsErrorCode,
 			@Value("${error.domain.exchange.notLastSixMonths.message}") String notLastSixMonthsErrorMessage,
 			@Value("${error.domain.exchange.treasury.service.error}") String treasuryServiceErrorMessage,
 			@Value("${error.domain.exchange.null-params.code}") String currencyConversionParamNullErrorCode,
 			@Value("${error.domain.exchange.null-params.message}") String currencyConversionParamNullErrorMessage){
 		this.exchangeRateProviderPort = providerPort;
+		this.cacheService = cacheService;
 		this.notLastSixMonthsErrorCode = notLastSixMonthsErrorCode;
 		this.notLastSixMonthsErrorMessage = notLastSixMonthsErrorMessage;
 		this.treasuryServiceErrorMessage = treasuryServiceErrorMessage;
@@ -52,7 +57,7 @@ public class PurchaseDomainService {
 	}
 	
 
-    public BigDecimal currencyConversion(PurchaseTransaction purchaseTransaction, Currency currencyOut){
+    public ConvertedCurrency currencyConversion(PurchaseTransaction purchaseTransaction, Currency currencyOut){
     	
     	
     	if(purchaseTransaction == null) {
@@ -65,17 +70,17 @@ public class PurchaseDomainService {
     	
     	List<ExchangeRate> exchangeRateList = null;
     	
-    	if(DateUtils.isDateWithin6MonthsFromNow(purchaseTransaction.getPurchaseDate())) {
+    	if(DateUtils.isDateToday(purchaseTransaction.getPurchaseDate())) {
     		
     		log.debug("getting exchange rates from cache for country {}", currencyOut.getCountry());
     		//try on cache
-    		exchangeRateList = exchangeRateProviderPort.getCachedExchangeRateList(StringUtils.capitalizeFirstLetter(currencyOut.getCountry()));
+    		exchangeRateList = cacheService.getCachedExchangeRateList(StringUtils.capitalizeFirstLetter(currencyOut.getCountry()));
     		
     		
     	}
     	
     	if(exchangeRateList == null) {
-			//it's not a environment country or PurchaseDate is older than 6 months
+			//it's not a environment country or PurchaseDate is not today
 			try {
 				
 				log.debug("fetching exchange rates from treasury service for country {}", currencyOut.getCountry());
@@ -116,8 +121,12 @@ public class PurchaseDomainService {
     			||	purchaseTransaction.getPurchaseDate().isEqual(exchangeRate.getEffectiveDate())) {
     			
     			log.debug("using exchange rate with effective date {} for purchase date {}", exchangeRate.getEffectiveDate(), purchaseTransaction.getPurchaseDate());
-    			return calculateCurrencyConversion(purchaseTransaction.getAmount(), exchangeRate.getExchangeRateAmount());
     			
+    			 return ConvertedCurrency.builder()
+		    			.currency(currencyOut)
+		    			.exchangeRateAmount(exchangeRate.getExchangeRateAmount())
+		    			.convertedAmount(calculateCurrencyConversion(purchaseTransaction.getAmount(), exchangeRate.getExchangeRateAmount()))
+		    			.build();
     		}
     		
 		}

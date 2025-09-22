@@ -14,15 +14,20 @@ import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransac
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
+@Transactional
 class PurchaseTest {
     private CurrencyRepository currencyRepository;
     private PurchaseTransactionRepository purchaseTransactionRepository;
@@ -31,6 +36,9 @@ class PurchaseTest {
     private StorePurchaseService purchase;
     private PurchaseTransactionMapper purchaseTransactionMapper;
     private TransactionIdGeneratorPort transactionIdGenerator;
+    private Environment environment;
+    private String dataBaseNotFoundMessage;
+    private String defaultCurrencyCode;
 
     @BeforeEach
     void setUp() {
@@ -40,14 +48,18 @@ class PurchaseTest {
         transactionObserver = mock(TransactionObserver.class);
         purchaseTransactionMapper = mock(PurchaseTransactionMapper.class);
         transactionIdGenerator = mock(TransactionIdGeneratorPort.class);
+        environment = mock(Environment.class);
+        dataBaseNotFoundMessage = "Not found";
+        defaultCurrencyCode = "USD";
         purchase = new StorePurchaseService(
             purchaseTransactionRepository,
             currencyRepository,
-            "USD",
+            environment,
             purchaseTransactionSubject,
             transactionObserver,
             purchaseTransactionMapper,
-            transactionIdGenerator
+            dataBaseNotFoundMessage,
+            defaultCurrencyCode
         );
     }
 
@@ -56,7 +68,7 @@ class PurchaseTest {
         StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("100.00"))
             .description("Test purchase")
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .build();
         Currency currency = Currency.builder()
             .code("USD")
@@ -83,7 +95,7 @@ class PurchaseTest {
         StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
             .amount(new BigDecimal("100.00"))
             .description("Test purchase")
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.empty());
         when(purchaseTransactionMapper.toDomain(request)).thenReturn(mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class));

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class USDateTimeFormatValidator implements ConstraintValidator<USDateTimeFormat, LocalDate> {
-    private static final DateTimeFormatter US_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private static final DateTimeFormatter US_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {

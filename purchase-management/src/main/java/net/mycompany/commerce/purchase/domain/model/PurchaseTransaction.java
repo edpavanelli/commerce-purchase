@@ -37,6 +37,7 @@ public class PurchaseTransaction implements Serializable {
     private Long id;
 
     @Embedded
+    @NotNull
     private TransactionId transactionId;
 
     @Column(precision = 15, scale = 2, nullable = false)

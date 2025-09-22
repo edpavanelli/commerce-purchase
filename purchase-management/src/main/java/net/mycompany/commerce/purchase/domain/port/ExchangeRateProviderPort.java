@@ -14,9 +14,4 @@ public interface ExchangeRateProviderPort {
 	
 	public Mono<List<ExchangeRate>> getTreasuryExchangeRateFromRestClient(TreasuryExchangeRateFilterDto treasuryExchangeRateFilter);
 	
-	void cacheExchangeRate(String country, List<ExchangeRate> exchangeRates); 
-	
-	List<ExchangeRate> getCachedExchangeRateList(String country);
-	
-	
 }

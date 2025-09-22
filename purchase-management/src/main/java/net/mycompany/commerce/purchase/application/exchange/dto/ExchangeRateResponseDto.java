@@ -16,9 +16,11 @@ import net.mycompany.commerce.common.dto.CurrencyDto;
 public class ExchangeRateResponseDto {
 	
 	private String transactionId;
+	private String description;
 	private CurrencyDto purchaseCurrency;
 	private BigDecimal purchaseAmount;
-	private LocalDate purchaseDate;
+	private LocalDate transactionDate;
 	private CurrencyDto targetCurrency;
 	private BigDecimal targetAmount;
+	private BigDecimal exchangeRate;
 }

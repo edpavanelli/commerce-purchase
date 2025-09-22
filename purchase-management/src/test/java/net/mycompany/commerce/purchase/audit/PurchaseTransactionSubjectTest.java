@@ -1,5 +1,6 @@
 package net.mycompany.commerce.purchase.audit;
 
+import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperation;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
@@ -27,14 +28,15 @@ class PurchaseTransactionSubjectTest {
         subject.addObserver(observer);
         PurchaseTransaction transaction = mock(PurchaseTransaction.class);
         AuditOperation operation = AuditOperation.CREATE;
+        AuditEvent event = mock(AuditEvent.class);
 
         CountDownLatch latch = new CountDownLatch(1);
         doAnswer(invocation -> { latch.countDown(); return null; })
-            .when(observer).onPurchaseTransactionChanged(transaction, operation);
+            .when(observer).onPurchaseTransactionChanged(event);
 
-        subject.notifyObserversOnPurchaseAsync(transaction, operation);
+        subject.notifyObserversOnPurchaseAsync(event);
         boolean called = latch.await(5, TimeUnit.SECONDS);
-        verify(observer, atLeastOnce()).onPurchaseTransactionChanged(transaction, operation);
+        verify(observer, atLeastOnce()).onPurchaseTransactionChanged(event);
         assertTrue(called, "Observer should be called asynchronously");
     }
 }

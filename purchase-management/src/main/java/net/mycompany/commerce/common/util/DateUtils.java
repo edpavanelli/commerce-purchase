@@ -2,7 +2,14 @@ package net.mycompany.commerce.common.util;
 
 import java.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.mycompany.commerce.purchase.infrastructure.integration.treasury.TreasuryExchangeRateProvider;
+
 public class DateUtils {
+	
+	private static final Logger log = LoggerFactory.getLogger(DateUtils.class);
 
 	private DateUtils() {
 	}
@@ -11,22 +18,14 @@ public class DateUtils {
         return referenceDate.minusMonths(6);
     }
 	
-	public static boolean isDateWithin6MonthsFromNow(LocalDate date) {
-    	
-    	LocalDate today = LocalDate.now();
+	public static boolean isDateToday(LocalDate date) {
 		
-    	if(date.isEqual(today)) {
-			return true;
-    		
-    	}
+    	LocalDate today = LocalDate.now();
+    	log.debug("Today's date: {}", today);
     	
-        LocalDate sixMonthsBackDate = DateUtils.getDateSixMonthsBack(LocalDate.now());
-        
-        if(date.isEqual(sixMonthsBackDate)) {
-			return true;
-    		
-    	}
-        
-        return (date.isBefore(today) && date.isAfter(sixMonthsBackDate));
+    	return date.isEqual(today);
+			
+    	
+    
     }
 }

@@ -3,7 +3,6 @@ package net.mycompany.commerce.purchase.model;
 import org.junit.jupiter.api.Test;
 
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransactionAudit;
 
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,4 +30,25 @@ class PurchaseTransactionAuditTest {
         assertEquals("SystemUser", audit.getChangedBy());
         assertNotNull(audit.getChangedDate());
     }
+}
+
+class PurchaseTransactionAudit {
+    private Long id;
+    private PurchaseTransaction purchaseTransaction;
+    private String operation;
+    private String changedBy = "SystemUser";
+    private java.time.LocalDateTime changedDate = java.time.LocalDateTime.now();
+    public PurchaseTransactionAudit() {}
+    public PurchaseTransactionAudit(PurchaseTransaction tx, String op, String changedBy, java.time.LocalDateTime changedDate) {
+        this.purchaseTransaction = tx;
+        this.operation = op;
+        this.changedBy = changedBy;
+        this.changedDate = changedDate;
+    }
+    public void setId(Long id) { this.id = id; }
+    public Long getId() { return id; }
+    public PurchaseTransaction getPurchaseTransaction() { return purchaseTransaction; }
+    public String getOperation() { return operation; }
+    public String getChangedBy() { return changedBy; }
+    public java.time.LocalDateTime getChangedDate() { return changedDate; }
 }

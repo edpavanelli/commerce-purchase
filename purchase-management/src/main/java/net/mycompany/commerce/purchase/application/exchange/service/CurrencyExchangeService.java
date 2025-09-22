@@ -5,6 +5,7 @@ import net.mycompany.commerce.purchase.application.exchange.dto.ExchangeRateRequ
 import net.mycompany.commerce.purchase.application.exchange.dto.ExchangeRateResponseDto;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.domain.valueobject.ConvertedCurrency;
 import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionRepository;
 import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -59,9 +62,9 @@ public class CurrencyExchangeService {
         log.debug("Converting currency to targetCurrency: {}", targetCurrency);
         
         // Get exchanged amount
-        java.math.BigDecimal exchangedAmount = purchaseDomainService.currencyConversion(purchaseTransaction, targetCurrency);
+        ConvertedCurrency convertedCurrency = purchaseDomainService.currencyConversion(purchaseTransaction, targetCurrency);
 
-        log.debug("currency converted: {}", exchangedAmount);
+        log.debug("currency converted: {}", convertedCurrency);
         log.debug("building response");
         
         // Map purchaseCurrency
@@ -77,13 +80,16 @@ public class CurrencyExchangeService {
                 .country(dto.getCountryName())
                 .build();
 
+
         return ExchangeRateResponseDto.builder()
                 .transactionId(dto.getTransactionId())
+                .description(purchaseTransaction.getDescription())
                 .purchaseCurrency(purchaseCurrencyDto)
                 .purchaseAmount(purchaseTransaction.getAmount())
-                .purchaseDate(purchaseTransaction.getPurchaseDate())
+                .transactionDate(purchaseTransaction.getPurchaseDate())
                 .targetCurrency(targetCurrencyDto)
-                .targetAmount(exchangedAmount)
+                .targetAmount(convertedCurrency.getConvertedAmount())
+                .exchangeRate(convertedCurrency.getExchangeRateAmount())
                 .build();
     }
 }

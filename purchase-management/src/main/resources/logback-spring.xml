@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- pattern console com máscara -->
+            <pattern>
+			    %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - 
+			    %replace(%msg){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
+			</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <encoder>
+            <!-- pattern file com máscara -->
+            <pattern>
+			    %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - 
+			    %replace(%msg){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
+			</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- Package-specific log levels -->
+    <logger name="net.mycompany.commerce.purchase" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="ERROR"/>
+    <logger name="org.springframework.web" level="ERROR"/>
+    <logger name="org.springframework.web.reactive.function.client" level="INFO"/>
+    <logger name="reactor.netty.http.client" level="INFO"/>
+    <logger name="org.springframework.security" level="DEBUG"/>
+    <logger name="org.springframework.security.web" level="DEBUG"/>
+    <logger name="org.springframework.security.authentication" level="DEBUG"/>
+    <logger name="org.springframework.security.access" level="DEBUG"/>
+
+</configuration>

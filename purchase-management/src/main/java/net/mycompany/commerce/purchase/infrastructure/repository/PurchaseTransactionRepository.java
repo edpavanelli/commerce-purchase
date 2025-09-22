@@ -7,7 +7,6 @@ import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public interface PurchaseTransactionRepository extends JpaRepository<PurchaseTransaction, Long> {

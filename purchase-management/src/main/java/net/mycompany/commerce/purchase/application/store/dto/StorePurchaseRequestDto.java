@@ -27,10 +27,10 @@ public class StorePurchaseRequestDto{
     @Positive(message = "Amount must be positive")
     private BigDecimal amount;
 
-    @Size(max = 50, message = "description size exceeded")
+    @Size(max = 50, message = "Description size exceeded")
     private String description;
 
-    @NotNull(message = "invalid date pattern")
+    @NotNull(message = "Invalid date pattern")
     @USDateTimeFormat
     private LocalDate purchaseDate;
 

@@ -14,28 +14,23 @@ import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 
 @Component
 public class TraceIdFilter extends OncePerRequestFilter {
-	
 	private final TransactionIdGeneratorPort idGenerator;
-	
-		public TraceIdFilter(TransactionIdGeneratorPort idGenerator) {	
-			this.idGenerator = idGenerator;
-		}
-	
+	public TraceIdFilter(TransactionIdGeneratorPort idGenerator) {
+		this.idGenerator = idGenerator;
+	}
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
-        String traceId = idGenerator.nextId(); // Gera um ID único
-        MDC.put("traceId", traceId); // Adiciona no MDC para logs SLF4J
-
+        String traceId = idGenerator.nextId(); // Generates a unique ID
+        MDC.put("traceId", traceId); // Adds to MDC for SLF4J logs
         try {
-            response.setHeader("X-Trace-Id", traceId); // opcional: retorna no header tb
+            response.setHeader("X-Trace-Id", traceId); // optional: also returns in the header
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove("traceId"); // limpa no fim
+            MDC.remove("traceId"); // cleans up at the end
         }
     }
 }

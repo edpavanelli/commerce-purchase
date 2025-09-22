@@ -19,12 +19,10 @@ public class CurrencyInitializerMock {
 		this.currencyRepository = currencyRepository;
 	}
     
-    //mock representing a database already charged
+    // Mock representing a database already populated
     @EventListener(ApplicationReadyEvent.class)
     public void insertDefaultCurrency() {
-    	
     	log.info("Checking if default currency USD exists and creating it...");
-    	
         currencyRepository.findByCode("USD").ifPresentOrElse(
             c -> {},
             () -> {
@@ -35,7 +33,6 @@ public class CurrencyInitializerMock {
                 currencyRepository.save(currency);
             }
         );
-        
         log.info("Currency USD is ready to use.");
     }
 }

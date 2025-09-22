@@ -14,7 +14,6 @@ import net.mycompany.commerce.common.dto.CurrencyDto;
 @AllArgsConstructor
 @Builder
 public class ExchangeRateResponseDto {
-	
 	private String transactionId;
 	private String description;
 	private CurrencyDto purchaseCurrency;

@@ -1,7 +1,6 @@
 package net.mycompany.commerce.mock;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
-import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 
 @RestController
 @RequestMapping("/commerce/purchase/v1")
@@ -32,33 +29,25 @@ public class ProducerMock {
         
     }
 
-    // Recebe compra e enfileira
+    // Receives purchase and enqueues
     @PostMapping(path = "/store" , consumes = "application/json", produces = "application/json")
     public ResponseEntity<Map<String, String>> enqueuePurchase(@RequestBody StorePurchaseRequestDto purchase) {
-    	
     	log.debug("Received purchase request: {}", purchase);
-    	
         String statusCode = queueManager.enqueue(purchase);
         log.debug("Enqueued purchase with status code: {}", statusCode);
-        
-    	
         return ResponseEntity.accepted().body(Map.of("statusCode", statusCode));
     }
 
-    // Consulta resultado (reply-to)
+    // Checks result (reply-to)
     @GetMapping("/{transactionId}")
     public ResponseEntity<StorePurchaseResponseDto> getResponse(@PathVariable("transactionId") String transactionId) {
     	log.debug("Checking response for transactionId: {}", transactionId);
-        
-    	StorePurchaseResponseDto result = queueManager.getResponse(transactionId);
-        
-    	log.debug("Response for transactionId {}: {}", transactionId, result);
-    	
+        StorePurchaseResponseDto result = queueManager.getResponse(transactionId);
+        log.debug("Response for transactionId {}: {}", transactionId, result);
         if (result == null) {
         	log.debug("Response for transactionId {} is still processing", transactionId);
             return ResponseEntity.status(HttpStatus.PROCESSING).build();
         }
-        
         log.debug("Response for transactionId {} is ready", transactionId);
         return ResponseEntity.ok(result);
     }

@@ -15,7 +15,7 @@ public class ExchangeRateRequestDto {
 	@NotBlank(message = "Transaction ID cannot be blank")
 	private String transactionId;
 	
-	@NotBlank(message = "Country's name cannot be blank")
+	@NotBlank(message = "Country name cannot be blank")
 	private String countryName;
 	
 }

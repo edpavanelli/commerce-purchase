@@ -10,7 +10,7 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        // Cria um cache em memória simples
+        // Creates a simple in-memory cache
         return new ConcurrentMapCacheManager("treasuryExchangeRateCache");
     }
 }

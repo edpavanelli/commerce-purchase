@@ -13,9 +13,8 @@ import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperatio
 @AllArgsConstructor
 @Builder
 public class AuditEvent {
-	    private TransactionId transactionId;
-	    private AuditOperation operation;
-	    private String changedBy; //should be a SystemUser entity
-	    private LocalDateTime changedDate;
-	
+    private TransactionId transactionId;
+    private AuditOperation operation;
+    private String changedBy; // should be a SystemUser entity
+    private LocalDateTime changedDate;
 }

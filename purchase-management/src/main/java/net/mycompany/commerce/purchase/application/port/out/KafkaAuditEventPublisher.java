@@ -7,13 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaAuditEventPublisher implements AuditEventPublisher{
 
-	
 	private static final Logger log = LoggerFactory.getLogger(KafkaAuditEventPublisher.class);
 
     @Override
     public void publishAuditEvent(AuditEvent event) {
-        // Aqui você simula enviar para uma fila (Kafka, Rabbit…)
-        log.info("[FAKE QUEUE] Publicando evento de auditoria: {}", event);
-        // poderia serializar em JSON, etc.
+        // here this method should be posting in a real Kafka topic
+        log.info("[FAKE QUEUE] Publishing audit event: {}", event);
+        
     }
 }

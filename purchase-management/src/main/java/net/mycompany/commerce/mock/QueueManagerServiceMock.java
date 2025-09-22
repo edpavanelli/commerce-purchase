@@ -1,7 +1,6 @@
 package net.mycompany.commerce.mock;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,10 +23,7 @@ public class QueueManagerServiceMock {
 	public String enqueue(StorePurchaseRequestDto request) {
 		
 		log.debug("Enqueuing purchase request: {}", request);
-        //String transactionId = Utils.getNanoId();
-        
         queue.offer(new Message(request));
-        
         log.debug("Purchase request enqueued with statusCode: {}", "200");
         return "200";
     }

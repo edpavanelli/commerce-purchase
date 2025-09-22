@@ -10,7 +10,6 @@ import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 
 @Component
 public class PurchaseTransactionMapper {
-	
 	private final TransactionIdGeneratorPort idGenerator;
 	
 	public PurchaseTransactionMapper(TransactionIdGeneratorPort idGenerator) {	
@@ -27,7 +26,7 @@ public class PurchaseTransactionMapper {
     }
 
     public StorePurchaseResponseDto toDto(PurchaseTransaction purchaseTransaction) {
-       		return StorePurchaseResponseDto.builder()
+       	return StorePurchaseResponseDto.builder()
 				.transactionId(purchaseTransaction.getTransactionId().getValue())
 				.build();
     }

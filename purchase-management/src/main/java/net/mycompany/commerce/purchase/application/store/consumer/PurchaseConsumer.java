@@ -24,28 +24,24 @@ import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 @Service
 @Validated
 public class PurchaseConsumer {
-	
 	private static final Logger log = LoggerFactory.getLogger(PurchaseConsumer.class);
 
     private final QueueManagerServiceMock queueManager;
     private final StorePurchaseService purchaseService;
     private ApplicationContext applicationContext;
-    
 
     public PurchaseConsumer(QueueManagerServiceMock queueManager, 
-    		StorePurchaseService purchaseService, 
-    		ApplicationContext applicationContext) {
+            StorePurchaseService purchaseService, 
+            ApplicationContext applicationContext) {
         this.queueManager = queueManager;
         this.purchaseService = purchaseService;
         this.applicationContext = applicationContext;
-        
     }
-    
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        // chama via proxy para @Async funcionar após contexto estar pronto
-    	applicationContext.getBean(PurchaseConsumer.class).consumeMessages();
+        // call via proxy so @Async works after context is ready
+        applicationContext.getBean(PurchaseConsumer.class).consumeMessages();
     }
 
     @Async
@@ -59,14 +55,14 @@ public class PurchaseConsumer {
 	    	
             try {
             	
-            	log.debug("Aguardando mensagem de compra...");
+            	log.debug("Waiting for purchase message...");
                 QueueManagerServiceMock.Message msg = queueManager.take();
                 
                 
-                log.debug("Mensagem de compra recebida: {}", msg);
+                log.debug("Purchase message received: {}", msg);
                 storePurchase(msg.request());
                 
-                log.debug("Mensagem de compra processada: {}", msg);
+                log.debug("Purchase message processed: {}", msg);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
@@ -76,11 +72,11 @@ public class PurchaseConsumer {
 
     public void storePurchase(@Valid StorePurchaseRequestDto request) {
     	
-    	log.debug("Processando compra: {}", request);
+    	log.debug("Processing purchase: {}", request);
     		
     	StorePurchaseResponseDto resp = purchaseService.storePurchase(request);
         
-        log.debug("Armazenando resposta para a compra: {}", resp);
+        log.debug("Storing response for the purchase: {}", resp);
         queueManager.putResponse(resp);
     }
 }

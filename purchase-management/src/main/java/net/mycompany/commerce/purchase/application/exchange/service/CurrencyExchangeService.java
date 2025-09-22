@@ -1,6 +1,5 @@
 package net.mycompany.commerce.purchase.application.exchange.service;
 
-import net.mycompany.commerce.purchase.application.exchange.controller.ExchangeController;
 import net.mycompany.commerce.purchase.application.exchange.dto.ExchangeRateRequestDto;
 import net.mycompany.commerce.purchase.application.exchange.dto.ExchangeRateResponseDto;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
@@ -39,13 +38,9 @@ public class CurrencyExchangeService {
     }
 
     public ExchangeRateResponseDto convertCurrency(ExchangeRateRequestDto dto) {
-    	
         TransactionId transactionId = new TransactionId(dto.getTransactionId());
-        
         log.debug("Looking for purchaseTransaction: {}", transactionId);
-        
         Optional<PurchaseTransaction> optionalTransaction = purchaseTransactionRepository.findByTransactionId(transactionId);
-        
         if (optionalTransaction.isEmpty()) {
             throw new DataBaseNotFoundException(dataBaseNotFoundMessage);
         }

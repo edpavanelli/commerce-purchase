@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -17,10 +16,9 @@ public class TransactionId implements Serializable {
     @Column(name = "transaction_id")
     private String value;
 
-    protected TransactionId() {} // JPA only
+    protected TransactionId() {}
 
     public TransactionId(String value) {
-        // aqui você pode validar tamanho/formato se quiser
         this.value = value;
     }
 

@@ -22,7 +22,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // evita criação de usuário default
+        // avoids creation of default user
         return new InMemoryUserDetailsManager();
     }
 }

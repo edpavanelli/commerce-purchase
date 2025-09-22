@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
+import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
+import java.time.LocalDate;
 import jakarta.validation.ConstraintViolation;
 
 import java.math.BigDecimal;
@@ -31,10 +35,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testValidTransaction() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("100.00"))
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -47,7 +51,7 @@ class PurchaseTransactionValidationTest {
             .transactionId(null)
             .amount(new BigDecimal("100.00"))
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -57,10 +61,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testNullAmount() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(null)
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -70,10 +74,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testNegativeAmount() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("-10.00"))
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -83,10 +87,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testAmountTooManyDigits() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("12345678901234.56"))
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -96,10 +100,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testNullCurrency() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("100.00"))
             .currency(null)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("desc")
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
@@ -109,7 +113,7 @@ class PurchaseTransactionValidationTest {
     @Test
     void testNullPurchaseDate() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("100.00"))
             .currency(validCurrency)
             .purchaseDate(null)
@@ -122,10 +126,10 @@ class PurchaseTransactionValidationTest {
     @Test
     void testDescriptionTooLong() {
         PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId("tx-1")
+            .transactionId(new TransactionId("tx-1"))
             .amount(new BigDecimal("100.00"))
             .currency(validCurrency)
-            .purchaseDate(LocalDateTime.now())
+            .purchaseDate(LocalDate.now())
             .description("a".repeat(81))
             .build();
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);

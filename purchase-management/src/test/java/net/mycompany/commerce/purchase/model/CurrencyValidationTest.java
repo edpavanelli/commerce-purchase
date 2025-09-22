@@ -3,6 +3,7 @@ package net.mycompany.commerce.purchase.model;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import net.mycompany.commerce.purchase.domain.model.Currency;
 import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

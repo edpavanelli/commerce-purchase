@@ -42,6 +42,7 @@ dependencies {
     implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
     implementation("org.glassfish:jakarta.el:4.0.2")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")

@@ -7,7 +7,6 @@ import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTrans
 import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,11 +18,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class PurchaseTransactionSubjectTest {
-    // Removed @Autowired and SpringBootTest, instantiate subject directly
+    
 
     @Test
     void testNotifyObserversOnPurchaseAsync() throws InterruptedException {
-        PurchaseTransactionSubject subject = new PurchaseTransactionSubject(); // fresh instance
+        PurchaseTransactionSubject subject = new PurchaseTransactionSubject(); 
         TransactionObserver observer = mock(TransactionObserver.class);
         subject.addObserver(observer);
         PurchaseTransaction transaction = mock(PurchaseTransaction.class);

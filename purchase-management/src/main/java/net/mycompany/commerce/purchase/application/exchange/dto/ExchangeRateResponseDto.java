@@ -19,7 +19,7 @@ public class ExchangeRateResponseDto {
 	private CurrencyDto purchaseCurrency;
 	private BigDecimal purchaseAmount;
 	private LocalDate transactionDate;
-	private CurrencyDto targetCurrency;
+	private String targetCountry;
 	private BigDecimal targetAmount;
 	private BigDecimal exchangeRate;
 }

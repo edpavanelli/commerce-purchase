@@ -18,7 +18,6 @@ import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRespon
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
-import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperation;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import net.mycompany.commerce.mock.ProducerMock;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
@@ -24,7 +23,7 @@ class ProducerMockTest {
 
     @Test
     void testEnqueuePurchase() throws Exception {
-        // Removed transactionId references, use available fields
+        
         Mockito.when(queueManager.enqueue(any(StorePurchaseRequestDto.class))).thenAnswer(invocation -> {
             StorePurchaseRequestDto req = invocation.getArgument(0);
             PurchaseTransactionAudit audit = Mockito.mock(PurchaseTransactionAudit.class);
@@ -49,7 +48,7 @@ class ProducerMockTest {
         ));
     }
 
-    // Helper mock for transaction
+    
     static class PurchaseTransactionMock extends net.mycompany.commerce.purchase.domain.model.PurchaseTransaction {
         private final String transactionId;
         public PurchaseTransactionMock(String transactionId) { this.transactionId = transactionId; }
@@ -63,7 +62,7 @@ class ProducerMockTest {
         response.setTransactionId("tx-789");
         when(queueManager.getResponse("tx-789")).thenReturn(response);
 
-        // Simulate logic and verify
+        
         StorePurchaseResponseDto result = queueManager.getResponse("tx-789");
         assertTrue("tx-789".equals(result.getTransactionId()));
     }
@@ -72,7 +71,7 @@ class ProducerMockTest {
     void testGetResponseProcessing() throws Exception {
         when(queueManager.getResponse("tx-000")).thenReturn(null);
 
-        // Simulate logic and verify
+        
         StorePurchaseResponseDto result = queueManager.getResponse("tx-000");
         assertTrue(result == null);
     }
@@ -85,7 +84,7 @@ class ProducerMockTest {
             StorePurchaseRequestDto req = StorePurchaseRequestDto.builder()
                 .amount(new java.math.BigDecimal("50.00"))
                 .description("JUnit REST test")
-                .purchaseDate(java.time.LocalDate.parse(invalidDate)) // This should throw
+                .purchaseDate(java.time.LocalDate.parse(invalidDate))
                 .build();
             queueManager.enqueue(req);
         } catch (Exception e) {
@@ -95,7 +94,7 @@ class ProducerMockTest {
         assertTrue(exceptionThrown);
     }
 
-    // Local stub classes for missing types
+    
     class PurchaseTransactionAudit {
         private String operation;
         private net.mycompany.commerce.purchase.domain.model.PurchaseTransaction purchaseTransaction;

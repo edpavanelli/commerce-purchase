@@ -77,7 +77,6 @@ class PurchaseTest {
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.of(currency));
         when(transactionIdGenerator.nextId()).thenReturn("tx-123");
-        // Mock the mapper to return a domain object with setters
         var purchaseTransaction = mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class);
         when(purchaseTransactionMapper.toDomain(request)).thenReturn(purchaseTransaction);
         when(purchaseTransactionMapper.toDto(purchaseTransaction)).thenReturn(

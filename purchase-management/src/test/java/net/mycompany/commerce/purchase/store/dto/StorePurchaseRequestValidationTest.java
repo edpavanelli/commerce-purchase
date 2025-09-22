@@ -7,7 +7,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
-import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTimeFormat;
 import jakarta.validation.ConstraintViolation;
 
 import java.math.BigDecimal;

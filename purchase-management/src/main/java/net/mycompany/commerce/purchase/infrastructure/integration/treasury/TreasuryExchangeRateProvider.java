@@ -2,21 +2,13 @@ package net.mycompany.commerce.purchase.infrastructure.integration.treasury;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -25,7 +17,6 @@ import net.mycompany.commerce.common.dto.PaginationFiltersDto;
 import net.mycompany.commerce.common.util.DateUtils;
 import net.mycompany.commerce.common.util.StringUtils;
 import net.mycompany.commerce.purchase.domain.port.ExchangeRateProviderPort;
-import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
 import net.mycompany.commerce.purchase.infrastructure.config.cache.CacheService;
 import net.mycompany.commerce.purchase.infrastructure.config.rest.TreasuryApiProperties;
@@ -75,16 +66,16 @@ public class TreasuryExchangeRateProvider implements ExchangeRateProviderPort {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder
 			            .path(properties.getPath())
-			            // filtros
+			            //filter
 			            .queryParam("filter", String.format(
 			                "effective_date:lte:%s,effective_date:gte:%s,country:eq:%s",
 			                treasuryExchangeRateFilter.getRequestDateTo().format(TreasuryApiConstants.TREASURY_DATE_FORMATTER),
 			                treasuryExchangeRateFilter.getRequestDateFrom().format(TreasuryApiConstants.TREASURY_DATE_FORMATTER),
 			                StringUtils.capitalizeFirstLetter(treasuryExchangeRateFilter.getCountry())
 			            ))
-			            // ordenação
+			            //sort
 			            .queryParam("sort", "-" + treasuryExchangeRateFilter.getSortBy().name().toLowerCase())
-			            // paginação
+			            //pagination
 			            .queryParam("page[number]", paginationFilter.getPageNumber())
 			            .queryParam("page[size]", paginationFilter.getPageSize())
 			            .build())

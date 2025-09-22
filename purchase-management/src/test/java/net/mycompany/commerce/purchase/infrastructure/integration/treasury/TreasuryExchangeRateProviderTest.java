@@ -6,7 +6,6 @@ import net.mycompany.commerce.purchase.infrastructure.integration.treasury.mappe
 import net.mycompany.commerce.purchase.infrastructure.config.cache.CacheService;
 import net.mycompany.commerce.purchase.infrastructure.config.rest.TreasuryApiProperties;
 import net.mycompany.commerce.purchase.infrastructure.config.rest.WebClientFactory;
-import net.mycompany.commerce.common.util.StringUtils;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

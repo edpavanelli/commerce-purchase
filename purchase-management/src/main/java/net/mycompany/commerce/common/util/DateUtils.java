@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.mycompany.commerce.purchase.infrastructure.integration.treasury.TreasuryExchangeRateProvider;
-
 public class DateUtils {
 	
 	private static final Logger log = LoggerFactory.getLogger(DateUtils.class);

@@ -3,9 +3,7 @@ package net.mycompany.commerce.purchase.infrastructure.config.audit;
 import org.springframework.stereotype.Component;
 
 import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 
-import org.springframework.scheduling.annotation.Async;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

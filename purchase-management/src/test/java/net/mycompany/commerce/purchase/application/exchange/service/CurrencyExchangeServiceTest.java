@@ -9,10 +9,8 @@ import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 import net.mycompany.commerce.purchase.infrastructure.repository.PurchaseTransactionRepository;
 import net.mycompany.commerce.purchase.domain.service.PurchaseDomainService;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.DataBaseNotFoundException;
-import net.mycompany.commerce.common.dto.CurrencyDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

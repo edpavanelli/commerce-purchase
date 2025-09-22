@@ -1,10 +1,8 @@
 package net.mycompany.commerce.purchase.application.store.consumer;
 
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -12,14 +10,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
-import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 
 @Service
 @Validated
@@ -40,7 +35,6 @@ public class PurchaseConsumer {
 
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        // call via proxy so @Async works after context is ready
         applicationContext.getBean(PurchaseConsumer.class).consumeMessages();
     }
 

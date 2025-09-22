@@ -5,10 +5,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 import net.mycompany.commerce.purchase.application.port.out.AuditEventPublisher;
-import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 
-
-import java.time.LocalDateTime;
 
 @Component
 public class AuditObserver implements TransactionObserver {

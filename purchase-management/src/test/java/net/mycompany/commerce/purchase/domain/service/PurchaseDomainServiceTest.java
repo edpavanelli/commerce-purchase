@@ -8,11 +8,8 @@ import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
 import net.mycompany.commerce.purchase.infrastructure.config.cache.CacheService;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.ApiServiceUnavaliableException;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.PurchaseDomainException;
-import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateFilterDto;
-import net.mycompany.commerce.purchase.infrastructure.integration.treasury.dto.TreasuryExchangeRateSortDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;

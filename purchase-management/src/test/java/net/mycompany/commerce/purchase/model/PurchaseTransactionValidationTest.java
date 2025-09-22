@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import jakarta.validation.ConstraintViolation;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;

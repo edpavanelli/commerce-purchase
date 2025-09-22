@@ -3,7 +3,6 @@ package net.mycompany.commerce.purchase.infrastructure.config.cache;
 import net.mycompany.commerce.purchase.domain.valueobject.ExchangeRate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 

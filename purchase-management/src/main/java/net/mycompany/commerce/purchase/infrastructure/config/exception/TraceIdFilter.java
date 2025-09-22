@@ -24,13 +24,13 @@ public class TraceIdFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        String traceId = idGenerator.nextId(); // Generates a unique ID
-        MDC.put("traceId", traceId); // Adds to MDC for SLF4J logs
+        String traceId = idGenerator.nextId(); 
+        MDC.put("traceId", traceId); 
         try {
-            response.setHeader("X-Trace-Id", traceId); // optional: also returns in the header
+            response.setHeader("X-Trace-Id", traceId); 
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove("traceId"); // cleans up at the end
+            MDC.remove("traceId");
         }
     }
 }

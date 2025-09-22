@@ -1,7 +1,6 @@
 package net.mycompany.commerce.purchase.domain.valueobject;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

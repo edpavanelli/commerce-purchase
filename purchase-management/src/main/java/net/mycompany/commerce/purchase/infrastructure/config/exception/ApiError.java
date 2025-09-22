@@ -2,6 +2,15 @@ package net.mycompany.commerce.purchase.infrastructure.config.exception;
 
 import java.time.Instant;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ApiError {
     private int status;
     private String code;
@@ -17,45 +26,5 @@ public class ApiError {
         this.traceId = traceId;
     }
 
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public Instant getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Instant timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getTraceId() {
-		return traceId;
-	}
-
-	public void setTraceId(String traceId) {
-		this.traceId = traceId;
-	}
-
-    
+	
 }

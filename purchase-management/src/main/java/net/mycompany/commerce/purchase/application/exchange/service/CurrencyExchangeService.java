@@ -15,9 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -82,7 +79,7 @@ public class CurrencyExchangeService {
                 .purchaseCurrency(purchaseCurrencyDto)
                 .purchaseAmount(purchaseTransaction.getAmount())
                 .transactionDate(purchaseTransaction.getPurchaseDate())
-                .targetCurrency(targetCurrencyDto)
+                .targetCountry(targetCurrencyDto.getCountry())
                 .targetAmount(convertedCurrency.getConvertedAmount())
                 .exchangeRate(convertedCurrency.getExchangeRateAmount())
                 .build();

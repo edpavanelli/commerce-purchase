@@ -29,7 +29,7 @@ public class ProducerMock {
         
     }
 
-    // Receives purchase and enqueues
+   
     @PostMapping(path = "/store" , consumes = "application/json", produces = "application/json")
     public ResponseEntity<Map<String, String>> enqueuePurchase(@RequestBody StorePurchaseRequestDto purchase) {
     	log.debug("Received purchase request: {}", purchase);
@@ -38,7 +38,7 @@ public class ProducerMock {
         return ResponseEntity.accepted().body(Map.of("statusCode", statusCode));
     }
 
-    // Checks result (reply-to)
+    
     @GetMapping("/{transactionId}")
     public ResponseEntity<StorePurchaseResponseDto> getResponse(@PathVariable("transactionId") String transactionId) {
     	log.debug("Checking response for transactionId: {}", transactionId);

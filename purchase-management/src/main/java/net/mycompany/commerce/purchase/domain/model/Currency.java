@@ -2,6 +2,7 @@ package net.mycompany.commerce.purchase.domain.model;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,28 +22,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(name = "Currency", description = "Represents a currency used in purchase transactions.")
 public class Currency implements Serializable {
-	
-	
-	
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Unique identifier for the currency.", example = "1")
     private Long id;
 
     @Column(length = 3, nullable = false)
     @Size(min = 3, max = 3)
-    // should be @NotBlank
+    @Schema(description = "ISO 4217 currency code.", example = "USD")
     private String code;
 
     @Column(length = 50, nullable = false)
     @Size(max = 50)
-    // should be @NotBlank
+    @Schema(description = "Name of the currency.", example = "US Dollar")
     private String name;
 
     @Column(length = 50, nullable = false)
     @Size(max = 50)
-    @NotBlank // should be an Entity
+    @NotBlank
+    @Schema(description = "Country associated with the currency.", example = "United States")
     private String country;
-    
-
 }

@@ -11,8 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 @RestController
 @RequestMapping(path = "/purchase/exchange/v1/")
+@Tag(name = "Currency Exchange", description = "Endpoints for currency conversion and exchange rates.")
 public class ExchangeController {
 	private static final Logger log = LoggerFactory.getLogger(ExchangeController.class);
     private final CurrencyExchangeService currencyExchangeService;
@@ -21,6 +27,14 @@ public class ExchangeController {
         this.currencyExchangeService = currencyExchangeService;
     }
 
+    @Operation(
+        summary = "Convert currency for a purchase transaction",
+        description = "Converts the purchase amount to the target country's currency using the latest exchange rate.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Conversion successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+        }
+    )
     @PostMapping(path = "/convertCurrency", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExchangeRateResponseDto> convertCurrency(@Validated @RequestBody ExchangeRateRequestDto request) {
         log.debug("Received currency conversion request: {}", request);

@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
@@ -18,6 +19,7 @@ import net.mycompany.commerce.purchase.application.store.service.StorePurchaseSe
 
 @Service
 @Validated
+@Tag(name = "Purchase Consumer", description = "Consumes purchase messages from the queue and processes store purchases.")
 public class PurchaseConsumer {
 	private static final Logger log = LoggerFactory.getLogger(PurchaseConsumer.class);
 

@@ -39,4 +39,16 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+    
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex) {
+        String traceId = MDC.get("traceId");
+        ApiError error = new ApiError(
+                HttpStatus.UNAUTHORIZED.value(),
+                "UNAUTHORIZED",
+                ex.getMessage(),
+                traceId
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
 }

@@ -11,11 +11,11 @@ First of all, I would like to thank you for the opportunity. This project was ha
 This project has **JWT** and **mTLS** implemented.
 
 Under `src/main/resources/certs` there are 5 certificates:
-	<br>- client-cert.pem
-	<br>- client-key.pem
-	<br>- client-keystore.p12
-	<br>- server-keystore.p12
-	<br>- server-trustsrore.p12
+ - client-cert.pem
+ - client-key.pem
+ - client-keystore.p12
+ - server-keystore.p12
+ - server-trustsrore.p12
 
 They should be placed together with the code? Of course not, but it makes easier for us to test.
 <br>You can use the **client-keystore.p12** in your browser to see the Swagger and the **client-cert.pem** and the **client-key.pem** in your test tool.
@@ -60,10 +60,11 @@ net.mycompany.commerce.purchase
 
 This project has a **Spring Cache** implementation to emulate a **cache aside pattern** with a real key/value memory database.
 
-I felt free to add a technical requisite in order to implement Cache in this project:
-	<br> - **Today Exchange Rates from the countries MyCompany is placed must be retrieved every day and must be cached due high demand. ** 
+Once this project is an opportunity to show you what I know, I felt free to add a Requirement #3 in order to implement Cache in this project:
 
-So when a client purchase and right away asks for Exchange (for some reason) the Exchange Rate will be retrieved from the Cache.
+ - **Today Exchange Rates from the countries MyCompany is placed must be retrieved every day and must be cached due high demand. ** 
+
+So when a client purchase and right away asks for Exchange, the Exchange Rate will be retrieved from the Cache.
 
 The Cache is configured in
 
@@ -97,7 +98,7 @@ The Purchase amount is set to be masked just as an example.
 
 This project has **Swagger** with **OpenAPI** Documentation for REST API and **Springwolf** for Event-Driven API implemented.
 
-The Rest documentation can be seeing in the browser at this location `https://localhost:8443/swagger-ui/index.html` and calling `https://localhost:8443/v3/api-docs/`. 
+The Rest documentation can be seeing in the browser at this location `https://localhost:8443/swagger-ui/index.html` and called by API `https://localhost:8443/v3/api-docs`. 
 
 The Event-Driven Documentation can be seeing calling `https://localhost:8443/springwolf/docs` but can not be seeing in a browser because Springwolf need a real server with a real protocol running. Which is not our case.  
 
@@ -115,6 +116,115 @@ and all over the DTOs, Controllers, Consumers and Publishers
 
 There is no configuration for the Springwolf outside the application.properties
 
+
+#Services
+
+There are two services implemented:
+
+The **Store Purchase** Service is to save a new Purchase in the database. 
+
+Like the Cache, I add a Requirement #4 in order to implement messaging in this project:
+
+- ** Queue must be implemented to Store new Purchases due to high demand **  
+
+
+The complete logic are implemented in:
+
+``` 
+net.mycompany.commerce.purchase
+├── application
+    ├── port
+    │   └── out
+    │       ├── AuditEvent.java                  # Represents an audit event for transaction changes
+    │       ├── AuditEventPublisher.java         # Interface for publishing audit events
+    │       └── KafkaAuditEventPublisher.java    # Mock implementation for publishing audit events to Kafka
+    └── store
+        ├── consumer
+        │   └── PurchaseConsumer.java            # Consumes purchase requests from a queue and processes them
+        ├── dto
+        │   ├── StorePurchaseRequestDto.java     # DTO for purchase request data (amount, description, date)
+        │   └── StorePurchaseResponseDto.java    # DTO for purchase response (transactionId)
+        ├── mapper
+        │   └── PurchaseTransactionMapper.java   # Maps between StorePurchase DTOs and domain PurchaseTransaction
+        ├── publisher
+        │   └── PurchasePublisher.java           # Publishes purchase responses to a queue (mock integration)
+        └── service
+            └── StorePurchaseService.java        # Service for handling purchase transactions (business logic)
+```
+
+
+And the **Currency Exchange** Service is to convert the purchase amount between different currencies. 
+
+The complete logic are implemented in:
+
+``` 
+net.mycompany.commerce.purchase
+├── application
+│   ├── exchange
+│       ├── controller
+│       │   └── ExchangeController.java           # REST controller for currency conversion endpoints
+│       ├── dto
+│       │   ├── ExchangeRateRequestDto.java       # DTO for currency exchange conversion requests
+│       │   └── ExchangeRateResponseDto.java      # DTO for currency exchange conversion responses
+│       └── service
+│           └── CurrencyExchangeService.java      # Service for handling currency conversion logic
+│
+├── domain
+│   ├── model
+│   │   ├── AuditOperationType.java              # Enum for audit operation types (CREATE, UPDATE, DELETE)
+│   │   ├── Currency.java                        # Entity representing a currency
+│   │   └── PurchaseTransaction.java             # Entity representing a purchase transaction
+│   ├── port
+│   │   ├── ExchangeRateProviderPort.java        # Interface for fetching exchange rates
+│   │   └── TransactionIdGeneratorPort.java      # Interface for generating transaction IDs
+│   ├── service
+│   │   └── PurchaseDomainService.java           # Domain service for purchase business logic
+│   └── valueobject
+│       ├── ConvertedCurrency.java               # Value object for converted currency
+│       ├── ExchangeRate.java                    # Value object for exchange rate
+│       └── TransactionId.java                   # Value object for transaction ID
+│
+├── infrastructure
+    ├── integration
+        └── treasury
+            ├── TreasuryExchangeRateProvider.java    # Implements ExchangeRateProviderPort, fetches rates from Treasury API
+            ├── common
+            │   └── TreasuryApiConstants.java        # Constants for Treasury API integration
+            ├── dto
+            │   ├── TreasuryExchangeRateFilterDto.java # DTO for filtering exchange rate queries
+            │   ├── ExchangeRateDto.java             # DTO representing exchange rate data
+            │   ├── TreasuryExchangeRateResponseDto.java # DTO for Treasury API response
+            │   └── TreasuryExchangeRateSortDto.java # Enum for sorting exchange rate queries
+            └── mapper
+                └── ExchangeRateMapper.java          # Maps Treasury API DTOs to domain ExchangeRate objects
+```
+ 
+ 
+#Production
+
+The repository **main** branch should have all set to be deployed in production:
+	
+ - Logs at Error level.
+ - Certificates externalized in a secure storage service.
+ - Security properties, like JWT and client secrets, in a HSM. 
+ - Environment properties 
+
+but, this could make harder for you to test, so this application is **not ready yet** to be productive. Consider the **main** branch just a Q&A approved branch.
+
+This project will be closer to production when the next features are implemented. 
+ 
+ 
+#Next Features
+
+I hadn't have time to implement all basic functions for a production environment so this are the main features that are missing:
+
+- **Schedule read the ExchageRates every day and cache then**
+- **actuator**
+- **dockerfile**
+- **Circuit Breaker**
+- **Observability Integration**
+- **Helm charts**
+- **CI/CD pipelines**
 
 #Tests
 
@@ -141,13 +251,12 @@ net.mycompany.commerce.mock
 ```
 
 Inside the ProducerMock.java there is a method: 
-<br>`public ResponseEntity<Map<String, String>> enqueuePurchase(@RequestBody StorePurchaseRequestDto purchase)` emulating a request queue, so this method do not return any data. 
+<br>`POST (/commerce/purchase/v1/store)` emulating a request queue, so this method do not return any data. 
 
 and a method:
-<br>`public ResponseEntity<StorePurchaseResponseDto> getResponse(@PathVariable("transactionId") String transactionId)`  emulating a response queue, you may call this method only if you wish to emulate a external system receiving the response from another queue.
+<br>`GET (/commerce/purchase/v1/{transactionId})`  emulating a response queue, you may call this method only if you wish to emulate a external system receiving the response from another queue.
 
-**but**, to execute the `getResponse` method and the 
-<br>`public ResponseEntity<ExchangeRateResponseDto> convertCurrency(@Valid @RequestBody ExchangeRateRequestDto request)` from the **ExchangeController** class **you need to retrieve the transactionId from the logs**
+**but**, to execute the `GET (/commerce/purchase/v1/{transactionId})` and `POST (/purchase/exchange/v1/convertCurrency)` method from the **ExchangeController** class **you need to retrieve the transactionId from the logs**
 
 Right after calling the `enqueuePurchase` the transactionId will be logged more then once. 
 
@@ -157,26 +266,17 @@ I am attaching my Postman environment and collection and also .json requests und
 
 #Executing
 
-to run the server...
+This is a Spring Boot project with Gradle, so to startup the project, run `./gradlew bootRun` in the project root folder. 
 
-lombok library
-
-gradle
-
-    
+This project uses **Lombok**, so if you do not already have installed the Entities, DTOs and ObjectValues can present errors in where they are called. 
+Install [Lombok](https://projectlombok.org/download) to stop seeing these errors.    
 
 
 
-#Next Features:
 
- <br> - **Schedule read the ExchageRates every day and cache then**
- <br> - **Observability Mock**
- <br> - **Circuit Breaker**
- <br> - **Helm charts**
- <br> - **CI/CD pipelines**
+#All project structure
 
-
-
+``` 
 net.mycompany.commerce.common
 │
 ├── dto
@@ -294,7 +394,6 @@ net.mycompany.commerce.purchase
 │   └── repository
 │       ├── CurrencyRepository.java                  # JPA repository for Currency entities
 │       └── PurchaseTransactionRepository.java       # JPA repository for PurchaseTransaction entities
+```
 
-# Notes
-- All main source classes are listed; test classes are excluded.
-- Each class is briefly described after its name.
+

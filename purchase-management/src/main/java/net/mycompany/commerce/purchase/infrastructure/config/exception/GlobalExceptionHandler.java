@@ -1,22 +1,36 @@
 package net.mycompany.commerce.purchase.infrastructure.config.exception;
 
 import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 	
 	
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleInvalidFormat(MethodArgumentNotValidException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Invalid request format: " + ex.getMostSpecificCause().getMessage());
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+        String traceId = MDC.get("traceId");
+        StringBuilder sb = new StringBuilder("Validation failed: ");
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+            sb.append(error.getField()).append(" - ").append(error.getDefaultMessage()).append("; ")
+        );
+
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                "VALIDATION_ERROR",
+                sb.toString(),
+                traceId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 	
 	

@@ -200,6 +200,12 @@ net.mycompany.commerce.purchase
 ```
  
  
+This services could be split into 2 different Micro Services, but I decided to put it together for 3 reasons:
+
+ - Implementation Time: I wanted to focus first in other aspects like, auth, log, exception, cache, documentation, etc...
+ - testing: 
+ - a well made monolith can be better then split into Micro Services from the beggining: 
+ 
 #Production
 
 The repository **main** branch should have all set to be deployed in production:
@@ -396,4 +402,223 @@ net.mycompany.commerce.purchase
 │       └── PurchaseTransactionRepository.java       # JPA repository for PurchaseTransaction entities
 ```
 
+---
+
+# C4 Model — Purchase Management
+
+**Project:** `net.mycompany.commerce.purchase`
+
+**Overview:** C4 documentation (Context, Containers, Components, Code + flows and sequence diagrams) of the Purchase Management microservice.
+
+---
+
+## 1. System Context (C1)
+
+### 1.1 Functional Summary
+The **Purchase Management** is responsible for processing and persisting purchase transactions requests publishing audit events, and converting amounts between currencies by providing endpoints for currency conversion and integrations with external providers (e.g. U.S. Treasury Fiscal Data). It includes components for authentication (JWT), cryptographic protocol (mTls), Cache aside, publish auditing events and Message Queue integration, REST and Event-Driven API documentation. 
+
+### 1.2 External Actors
+- **External systems**: Web or mobile app, other commerce microservices or external systems that stores purchases transactions and requests currency conversion.
+- **Queue System**: Message broker used to enqueue purchases requests/responses.
+- **Treasury API**: External service that provides exchange rates.
+- **Audit System**: Publisher of audit events.
+
+
+### 1.3 Context Diagram
+
+![Context Diagram](doc/c4-images/1.png)
+
+---
+
+## 2. Containers (C2)
+
+### 2.1 Main Containers
+- **purchase-management (Spring Boot app)** — main executable exposing REST endpoints and queue consumers.
+  - Entrypoint: `PurchaseManagementApplication.java`
+  - Cache daily Exchange Rates (Treasury API integration)
+  - Exposes HTTP API To Currency Conversion (Auth + Internal endpoints + Treasury API integration)
+  - Consumes and publishes messages in Queues to store purchase transactions (Auth + Internal consumer and publisher + Audit transaction)
+  - Publishes audit events in external brokers
+  - Saves Purchase Transactions in RDBMS Database
+  - Provides Technical Documentation for REST API and Queue consumers and publishers
+   
+
+- **Database (RDBMS)** — stores `Currency` and `PurchaseTransaction` entities.
+
+- **Queue Events** — queue for purchase requests/responses; `PurchaseConsumer.java ` and `PurchasePublisher.java`.
+
+- **Audit Events** — Publishes requests into external broker; `AuditEvent.java `.
+
+- **Treasury API (external)** — external service to fetch exchange rates `TreasuryExchangeRateProvider.java`.
+
+- **Exchange Rates Cache** — Consumes Treasury API and Cache results `TreasuryExchangeRateProvider.java`.
+
+- **Logging** — Masks sensitive data.
+
+### 2.2 Container Diagram
+
+![Container Diagram](doc/c4-images/2.png)
+
+---
+
+## 3. Components (C3)
+
+### 3.1 Component Map of `application` module (store + exchange)
+
+**Exchange Subsystem**
+- `ExchangeController` — REST endpoints for conversion (request/response DTOs: `ExchangeRateRequestDto`, `ExchangeRateResponseDto`).
+- `CurrencyExchangeService` — conversion flow: get purchase transaction, retrieves Exchange Rate via `CacheService` or `ExchangeRateProviderPort`, orchestrates domain validations (via `PurchaseDomainService`)and returns `ConvertedCurrency`.
+
+**Store Subsystem**
+- `PurchaseConsumer` — listener/consumer receiving `StorePurchaseRequestDto` from the request queue, transforms with `PurchaseTransactionMapper` and calls `StorePurchaseService`.
+- `StorePurchaseService` — generates `TransactionId` (via `TransactionIdGeneratorPort`), persists `PurchaseTransaction` and publishes `StorePurchaseResponseDto` to queue via `PurchasePublisher`.
+- `PurchasePublisher` — sends the response to response queue.
+- `KafkaAuditEventPublisher` — implements `AuditEventPublisher` and sends audit events to Kafka broker.
+
+**Infrastructure/Adapters**
+- `NanoIdTransactionIdGeneratorAdapter` — generates IDs (NanoId) implementing `TransactionIdGeneratorPort`.
+- `TreasuryExchangeRateProvider` — implements `ExchangeRateProviderPort`, makes calls to Treasury API via `WebClient`.
+- `CacheService` — encapsulates cache (configured by `CacheConfig`).
+- `TraceIdFilter`, `JwtAuthenticationFilter`, `SecurityConfig` — cross-cutting concerns.
+
+**Repositories / Mappers**
+- `CurrencyRepository`, `PurchaseTransactionRepository` — JPA repositories.
+- `CurrencyMapper`, `PurchaseTransactionMapper`, `ExchangeRateMapper` — conversions between DTOs/Entities/Domain VOs.
+
+### 3.2 Supporting Components (common + mock)
+- `CurrencyDto`, `PaginationFiltersDto`, `CurrencyMapper` — shared DTOs and mappers.
+
+### 3.3 Component Diagram
+
+![Component Diagram](doc/c4-images/3.png)
+
+---
+
+## 4. Main Flows (sequence and events)
+
+### 4.1 Flow: Currency conversion (synchronous HTTP)
+1. Client calls `POST /exchange/convert` on `ExchangeController` with `ExchangeRateRequestDto`.
+2. `ExchangeController` validates request and calls `CurrencyExchangeService`.
+3. `CurrencyExchangeService` checks `CacheService` for rate.
+   - If not found, calls `ExchangeRateProviderPort` (`TreasuryExchangeRateProvider`) to fetch rate from Treasury.
+   - Maps response to `ExchangeRate` VO and stores in cache.
+4. Calculates `ConvertedCurrency` and returns `ExchangeRateResponseDto`.
+5. `ExchangeController` responds to client.
+
+**Sequence**
+
+![SequenceOne](doc/c4-images/4.png)
+
+### 4.2 Flow: Purchase processing (asynchronous via queue)
+1. External system (Producer/Front) publishes `StorePurchaseRequestDto` to the queue.
+2. `PurchaseConsumer` consumes the message.
+3. `PurchaseConsumer` maps DTO to `PurchaseTransaction` using `PurchaseTransactionMapper`.
+4. `StorePurchaseService` calls `PurchaseDomainService` to validate rules (e.g. fields, limits, currency conversion if needed via `ExchangeRateProviderPort`).
+5. `TransactionIdGeneratorPort` (NanoId adapter) generates `TransactionId`.
+6. Persists `PurchaseTransaction` via `PurchaseTransactionRepository`.
+7. Publishes `StorePurchaseResponseDto` to the queue with `PurchasePublisher`.
+8. Publishes `AuditEvent` through `AuditEventPublisher` (Kafka).
+
+**Sequence**
+
+![SequenceTwo](doc/c4-images/5.png)
+
+---
+
+## 5. Data Models & Contracts
+
+### 5.1 Main Entities
+- `Currency` (id, code, name, country, updatedAt)
+- `PurchaseTransaction` (id, transactionId, amount, currencyCode, description, date, status, createdAt, updatedAt)
+
+### 5.2 DTOs / Contracts
+- `ExchangeRateRequestDto` { fromCurrency, toCurrency, amount, date? }
+- `ExchangeRateResponseDto` { originalAmount, convertedAmount, rate, timestamp }
+- `StorePurchaseRequestDto` { amount, currency, description, date }
+- `StorePurchaseResponseDto` { transactionId }
+- `AuditEvent` { entityId, operation, timestamp, payload }
+
+### 5.3 Queue Events
+- `store.purchase.request` — payload `StorePurchaseRequestDto`
+- `store.purchase.response` — payload `StorePurchaseResponseDto`
+- `audit.event` — payload `AuditEvent`
+
+---
+
+## 6. Non-functional & Cross-cutting Concerns
+
+### 6.1 Security
+- JWT authentication via `JwtAuthenticationFilter`.
+- Role-based authorization for sensitive endpoints (e.g. admin endpoints).
+- TraceId propagation via `TraceIdFilter` for log/request correlation.
+
+### 6.2 Resilience
+- Timeouts and retries on calls to `Treasury` with `WebClient` and exponential backoff.
+- Circuit Breaker (e.g. Resilience4j) recommended when calling `Treasury`.
+- Validation and dead-letter queue (DLQ) for messages that fail repeatedly.
+
+### 6.3 Observability
+- Structured logs (traceId, spanId, transactionId)
+- Metrics (request count, latency, queue lag, consumer throughput)
+- Export metrics to Prometheus and dashboards in Grafana
+
+### 6.4 Performance & Cache
+- Cache for exchange rates (TTL configurable in `CacheConfig`).
+- DB indices on `transactionId`, `date` for fast queries.
+
+### 6.5 Tests
+- Mocks (`mock` package) for queueing and currency initialization.
+- Unit tests for `PurchaseDomainService`, integration tests for `TreasuryExchangeRateProvider` (using WireMock) and contract tests for the queue.
+
+---
+
+## 7. Deployment / Infrastructure (C4 Deployment suggestions)
+
+- **Kubernetes (recommended)**
+  - Deployment `purchase-management` with readiness/liveness probes.
+  - ConfigMap/Secrets for `Treasury` credentials, JWT secrets, DB connection.
+  - Stateful/Deployment for DB (or managed RDS service).
+  - Kafka cluster (or managed Kafka) for queues and audit topics.
+  - Horizontal Pod Autoscaler based on CPU/latency.
+
+- **Topology**
+
+![Topology](doc/c4-images/6.png)
+
+---
+
+## 8. Architectural Recommendations & Improvements
+
+1. **Circuit Breaker + Bulkhead** for external calls (Treasury).
+2. **DLQ and Retry Policy** for queue consumers; monitor failed messages.
+3. **Contracts / Schema Registry** (Avro/JSON Schema) for queue messages to avoid contract break on deploy.
+4. **API Gateway** to centralize authentication and routing.
+5. **Domain Events explicit**: normalize `AuditEvent` and other events in a common schema.
+6. **Migrations (Flyway/Liquibase)** to manage DB schema.
+7. **Feature flags** to release experimental behaviors (e.g. new rate logic).
+
+---
+
+## 9. Glossary and Responsibilities (quick mapping)
+- **ExchangeController**: responsible for exposing exchange endpoints and light validation.
+- **CurrencyExchangeService**: retrieve/cache rate and calculate conversion.
+- **PurchaseConsumer**: orchestrate message processing from the queue.
+- **StorePurchaseService**: application logic for creating transactions.
+- **PurchaseDomainService**: pure business rules (validations and invariants).
+- **NanoIdTransactionIdGeneratorAdapter**: responsible for creating unique IDs.
+- **KafkaAuditEventPublisher**: publish audit events.
+
+---
+
+## 10. Possible Next Steps (delivery suggestions)
+- Generate C4 visual diagrams with [PlantUML / Structurizr] exporting the above mermaid to visual tools.
+- Create operation playbooks (playbook for queue failures, treasury failures, DB recovery).
+- Map concrete endpoints (urls, verbs, payloads) if you want generated OpenAPI documentation.
+
+---
+
+_If you want, I can:_
+- transform these mermaid diagrams into PlantUML (for Structurizr)
+- generate a README + summarized diagram in PNG (if you ask me to create files)
+- list REST endpoints complete with payload examples
 

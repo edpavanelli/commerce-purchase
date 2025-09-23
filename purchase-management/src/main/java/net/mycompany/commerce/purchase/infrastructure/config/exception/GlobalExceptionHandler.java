@@ -4,11 +4,21 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
+	
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleInvalidFormat(MethodArgumentNotValidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Invalid request format: " + ex.getMostSpecificCause().getMessage());
+    }
+	
 	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleInvalidFormat(HttpMessageNotReadableException ex) {

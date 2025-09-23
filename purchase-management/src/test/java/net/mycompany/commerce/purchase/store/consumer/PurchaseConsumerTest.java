@@ -12,6 +12,9 @@ import org.springframework.context.ApplicationContext;
 
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 class PurchaseConsumerTest {
     private QueueManagerServiceMock queueManager;
     private StorePurchaseService purchaseService;
@@ -29,18 +32,17 @@ class PurchaseConsumerTest {
     @Test
     void testStorePurchaseCallsDependencies() {
         StorePurchaseRequestDto request = StorePurchaseRequestDto.builder()
-            .amount(new java.math.BigDecimal("100.00"))
+            .amount(new BigDecimal("100.00"))
             .description("desc")
-            .purchaseDate(java.time.LocalDate.now())
+            .purchaseDate(LocalDate.now())
             .build();
         StorePurchaseResponseDto response = StorePurchaseResponseDto.builder()
             .transactionId("tx-456")
             .build();
-        when(purchaseService.storePurchase(request)).thenReturn(response);
 
+
+        doNothing().when(purchaseService).storePurchase(request);
         consumer.storePurchase(request);
-
         verify(purchaseService, times(1)).storePurchase(request);
-        verify(queueManager, times(1)).putResponse(response);
     }
 }

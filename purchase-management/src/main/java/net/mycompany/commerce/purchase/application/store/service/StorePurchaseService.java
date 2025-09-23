@@ -16,6 +16,7 @@ import net.mycompany.commerce.purchase.application.port.out.AuditEvent;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
+import net.mycompany.commerce.purchase.application.store.publisher.PurchasePublisher;
 import net.mycompany.commerce.purchase.domain.model.Currency;
 import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.AuditOperation;
@@ -37,6 +38,7 @@ public class StorePurchaseService {
     private final PurchaseTransactionMapper purchaseTransactionMapper;
     private final String dataBaseNotFoundMessage;
     private final String defaultCurrencyCode;
+    private final PurchasePublisher purchasePublisher;
 
     public StorePurchaseService(
         PurchaseTransactionRepository purchaseTransactionRepository,
@@ -45,6 +47,7 @@ public class StorePurchaseService {
         PurchaseTransactionSubject purchaseTransactionSubject,
         TransactionObserver transactionObserver,
         PurchaseTransactionMapper purchaseTransactionMapper,
+        PurchasePublisher purchasePublisher,
         @Value("${error.database.notfound.message}") String dataBaseNotFoundMessage,
         @Value("${environment.default.currency.code}") String defaultCurrencyCode){
         this.currencyRepository = currencyRepository;
@@ -55,11 +58,12 @@ public class StorePurchaseService {
         this.transactionObserver = transactionObserver;
         this.purchaseTransactionSubject.addObserver(transactionObserver);
         this.purchaseTransactionMapper = purchaseTransactionMapper;
+        this.purchasePublisher = purchasePublisher;
         
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public StorePurchaseResponseDto storePurchase(StorePurchaseRequestDto request) {
+    public void storePurchase(StorePurchaseRequestDto request) {
     	
     	PurchaseTransaction purchaseTransaction = purchaseTransactionMapper.toDomain(request);
     	
@@ -98,7 +102,7 @@ public class StorePurchaseService {
         	    }
         	);
         
+        purchasePublisher.publishResponse(response);
        
-        return response;
     }
 }

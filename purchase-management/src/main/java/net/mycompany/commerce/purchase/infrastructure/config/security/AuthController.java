@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.UnauthorizedException;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "Endpoints for client authentication and JWT token generation.")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -27,6 +31,14 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    @Operation(
+        summary = "Generate JWT token",
+        description = "Authenticates client credentials and returns a JWT token if valid.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Token generated successfully"),
+            @ApiResponse(responseCode = "401", description = "Invalid client credentials")
+        }
+    )
     @PostMapping("/token")
     public ResponseEntity<Map<String, String>> getToken(@RequestBody AuthRequest request) {
 

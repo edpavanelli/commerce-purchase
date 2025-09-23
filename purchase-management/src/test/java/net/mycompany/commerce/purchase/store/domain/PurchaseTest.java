@@ -3,9 +3,12 @@ package net.mycompany.commerce.purchase.store.domain;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.mapper.PurchaseTransactionMapper;
+import net.mycompany.commerce.purchase.application.store.publisher.PurchasePublisher;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchase.domain.model.PurchaseTransaction;
 import net.mycompany.commerce.purchase.domain.port.TransactionIdGeneratorPort;
+import net.mycompany.commerce.purchase.domain.valueobject.TransactionId;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.PurchaseTransactionSubject;
 import net.mycompany.commerce.purchase.infrastructure.config.audit.TransactionObserver;
 import net.mycompany.commerce.purchase.infrastructure.config.exception.DataBaseNotFoundException;
@@ -25,6 +28,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import org.mockito.ArgumentCaptor;
 
 @SpringBootTest
 @Transactional
@@ -39,6 +43,7 @@ class PurchaseTest {
     private Environment environment;
     private String dataBaseNotFoundMessage;
     private String defaultCurrencyCode;
+    private PurchasePublisher purchasePublisher;
 
     @BeforeEach
     void setUp() {
@@ -46,8 +51,9 @@ class PurchaseTest {
         purchaseTransactionRepository = mock(PurchaseTransactionRepository.class);
         purchaseTransactionSubject = mock(PurchaseTransactionSubject.class);
         transactionObserver = mock(TransactionObserver.class);
-        purchaseTransactionMapper = mock(PurchaseTransactionMapper.class);
-        transactionIdGenerator = mock(TransactionIdGeneratorPort.class);
+        transactionIdGenerator = mock(TransactionIdGeneratorPort.class); // mock first
+        purchaseTransactionMapper = new PurchaseTransactionMapper(transactionIdGenerator); // then use in mapper
+        purchasePublisher = mock(PurchasePublisher.class);
         environment = mock(Environment.class);
         dataBaseNotFoundMessage = "Not found";
         defaultCurrencyCode = "USD";
@@ -58,6 +64,7 @@ class PurchaseTest {
             purchaseTransactionSubject,
             transactionObserver,
             purchaseTransactionMapper,
+            purchasePublisher,
             dataBaseNotFoundMessage,
             defaultCurrencyCode
         );
@@ -76,15 +83,19 @@ class PurchaseTest {
             .country("United States")
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.of(currency));
+        // Use the correct TransactionId type
         when(transactionIdGenerator.nextId()).thenReturn("tx-123");
-        var purchaseTransaction = mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class);
-        when(purchaseTransactionMapper.toDomain(request)).thenReturn(purchaseTransaction);
-        when(purchaseTransactionMapper.toDto(purchaseTransaction)).thenReturn(
-            StorePurchaseResponseDto.builder().transactionId("tx-123").build()
-        );
-        when(purchaseTransactionRepository.save(any())).thenReturn(purchaseTransaction);
+        // Use the real PurchaseTransaction object created by the mapper
+        PurchaseTransaction realPurchaseTransaction = purchaseTransactionMapper.toDomain(request);
+        when(purchaseTransactionRepository.save(any())).thenReturn(realPurchaseTransaction);
 
-        StorePurchaseResponseDto response = purchase.storePurchase(request);
+        // Simulate storing purchase
+        purchase.storePurchase(request);
+
+        // Capture the response sent to publishResponse
+        ArgumentCaptor<StorePurchaseResponseDto> responseCaptor = ArgumentCaptor.forClass(StorePurchaseResponseDto.class);
+        verify(purchasePublisher).publishResponse(responseCaptor.capture());
+        StorePurchaseResponseDto response = responseCaptor.getValue();
         assertNotNull(response);
         assertEquals("tx-123", response.getTransactionId());
     }
@@ -97,7 +108,7 @@ class PurchaseTest {
             .purchaseDate(LocalDate.now())
             .build();
         when(currencyRepository.findByCode("USD")).thenReturn(Optional.empty());
-        when(purchaseTransactionMapper.toDomain(request)).thenReturn(mock(net.mycompany.commerce.purchase.domain.model.PurchaseTransaction.class));
+        // Use the real mapper, do not mock toDomain
         assertThrows(DataBaseNotFoundException.class, () -> purchase.storePurchase(request));
     }
 }

@@ -1,5 +1,6 @@
 package net.mycompany.commerce.purchase.infrastructure.config.security;
 
+	
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,10 +66,20 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/token").permitAll()
+                .requestMatchers(
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs.yaml",
+                        "/springwolf/**",
+                        "/error"
+                    ).permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider(userDetailsService(passwordEncoder()), passwordEncoder()))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
+    
+    
 }

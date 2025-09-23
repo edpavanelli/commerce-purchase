@@ -6,8 +6,7 @@
         <encoder>
             <!-- pattern console com máscara -->
             <pattern>
-			    %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - 
-			    %replace(%msg){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
+			    %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %replace(%m){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
 			</pattern>
         </encoder>
     </appender>
@@ -18,8 +17,7 @@
         <encoder>
             <!-- pattern file com máscara -->
             <pattern>
-			    %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - 
-			    %replace(%msg){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
+			    %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %replace(%m){'(?i)(password|secret|token|apikey|cardNumber|cvv|amount|purchaseAmount|targetAmount)=([^\\s&amp;]+)', '$1=****'}%n
 			</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

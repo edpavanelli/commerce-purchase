@@ -15,7 +15,6 @@ import io.github.springwolf.core.asyncapi.annotations.AsyncOperation;
 import jakarta.validation.Valid;
 import net.mycompany.commerce.mock.QueueManagerServiceMock;
 import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
 import net.mycompany.commerce.purchase.application.store.service.StorePurchaseService;
 
 @Service
@@ -42,26 +41,23 @@ public class PurchaseConsumer {
 
     @Async
     public void consumeMessages() {
-    	int i = 0;
         while (true) {
-        	i++;
-	    	if (i  == Integer.MIN_VALUE) { 
-	    		break;
-	    	}
-	    	
             try {
-            	
-            	log.debug("Waiting for purchase message...");
+                log.debug("Waiting for purchase message...");
                 QueueManagerServiceMock.Message msg = queueManager.take();
-                
-                
                 log.debug("Purchase message received: {}", msg);
-                storePurchase(msg.request());
-                
-                log.debug("Purchase message processed: {}", msg);
+
+                try {
+                    storePurchase(msg.request());
+                    log.debug("Purchase message processed: {}", msg);
+                } catch (Exception ex) {
+                    
+                    log.error("Error processing purchase message {}: {}", msg, ex.getMessage(), ex);
+                }
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                break;
+                break; 
             }
         }
     }

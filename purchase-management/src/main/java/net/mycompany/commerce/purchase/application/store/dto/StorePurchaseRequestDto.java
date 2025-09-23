@@ -2,6 +2,7 @@ package net.mycompany.commerce.purchase.application.store.dto;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 
@@ -23,7 +24,7 @@ import net.mycompany.commerce.purchase.infrastructure.config.validator.USDateTim
 @Schema(name = "StorePurchaseRequestDto", description = "Request data for storing a purchase transaction.")
 public class StorePurchaseRequestDto{
     @NotNull
-    @Digits(integer = 13, fraction = 2, message = "Wrong amount format")
+    @Digits(integer = 13, fraction = 5, message = "Wrong amount format")
     @Positive(message = "Amount must be positive")
     @Schema(description = "Amount of the purchase.", example = "150.00")
     private BigDecimal amount;
@@ -36,4 +37,6 @@ public class StorePurchaseRequestDto{
     @USDateTimeFormat
     @Schema(description = "Date of the purchase.", example = "2025-09-22")
     private LocalDate purchaseDate;
+    
+    
 }

@@ -17,12 +17,12 @@ public class PurchaseTransactionMapper {
 	}
 	
     public PurchaseTransaction toDomain(StorePurchaseRequestDto dto) {
-    	return PurchaseTransaction.builder()
-				.transactionId(new TransactionId(idGenerator.nextId()))
-				.amount(dto.getAmount())
-				.purchaseDate(dto.getPurchaseDate())
-				.description(dto.getDescription())
-				.build();
+    	return new PurchaseTransaction(
+    			new TransactionId(idGenerator.nextId()),
+    			dto.getAmount(),
+    			null, // Currency will be set elsewhere
+    			dto.getPurchaseDate(),
+    			dto.getDescription());
     }
 
     public StorePurchaseResponseDto toDto(PurchaseTransaction purchaseTransaction) {

@@ -42,11 +42,11 @@ class PurchaseDomainServiceTest {
     @Test
     void testCurrencyConversionSuccessFromCache() {
         Currency currency = Currency.builder().country("Brazil").build();
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-                .amount(new BigDecimal("10.00"))
-                .currency(currency)
-                .purchaseDate(LocalDate.now())
-                .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setAmount(new BigDecimal("10.00"));
+        tx.setCurrency(currency);
+        tx.setPurchaseDate(LocalDate.now());
+
         ExchangeRate rate = ExchangeRate.builder().exchangeRateAmount(new BigDecimal("2.00")).effectiveDate(LocalDate.now()).build();
         when(cacheService.getCachedExchangeRateList(any())).thenReturn(List.of(rate));
         ConvertedCurrency result = service.currencyConversion(tx, currency);
@@ -56,11 +56,11 @@ class PurchaseDomainServiceTest {
     @Test
     void testCurrencyConversionSuccessFromProvider() {
         Currency currency = Currency.builder().country("Brazil").build();
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-                .amount(new BigDecimal("10.00"))
-                .currency(currency)
-                .purchaseDate(LocalDate.now().minusDays(1))
-                .build();
+        PurchaseTransaction tx =  new PurchaseTransaction();
+        tx.setAmount(new BigDecimal("10.00"));
+        tx.setCurrency(currency);
+        tx.setPurchaseDate(LocalDate.now().minusDays(1));
+                
         ExchangeRate rate = ExchangeRate.builder().exchangeRateAmount(new BigDecimal("2.00")).effectiveDate(LocalDate.now().minusDays(1)).build();
         when(cacheService.getCachedExchangeRateList(any())).thenReturn(null);
         when(providerPort.getTreasuryExchangeRateFromRestClient(any())).thenReturn(Mono.just(List.of(rate)));
@@ -76,14 +76,19 @@ class PurchaseDomainServiceTest {
 
     @Test
     void testCurrencyConversionThrowsForNullCurrency() {
-        PurchaseTransaction tx = PurchaseTransaction.builder().amount(new BigDecimal("10.00")).purchaseDate(LocalDate.now()).build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setAmount(new BigDecimal("10.00"));
+        tx.setPurchaseDate(LocalDate.now());
         assertThrows(PurchaseDomainException.class, () -> service.currencyConversion(tx, null));
     }
 
     @Test
     void testCurrencyConversionThrowsForNoRates() {
         Currency currency = Currency.builder().country("Brazil").build();
-        PurchaseTransaction tx = PurchaseTransaction.builder().amount(new BigDecimal("10.00")).currency(currency).purchaseDate(LocalDate.now()).build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setAmount(new BigDecimal("10.00"));
+        tx.setCurrency(currency);
+        tx.setPurchaseDate(LocalDate.now());
         when(cacheService.getCachedExchangeRateList(any())).thenReturn(null);
         when(providerPort.getTreasuryExchangeRateFromRestClient(any())).thenReturn(Mono.just(Collections.emptyList()));
         assertThrows(PurchaseDomainException.class, () -> service.currencyConversion(tx, currency));
@@ -92,7 +97,10 @@ class PurchaseDomainServiceTest {
     @Test
     void testCurrencyConversionThrowsForProviderException() {
         Currency currency = Currency.builder().country("Brazil").build();
-        PurchaseTransaction tx = PurchaseTransaction.builder().amount(new BigDecimal("10.00")).currency(currency).purchaseDate(LocalDate.now()).build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setAmount(new BigDecimal("10.00"));
+        tx.setCurrency(currency);
+        tx.setPurchaseDate(LocalDate.now());
         when(cacheService.getCachedExchangeRateList(any())).thenReturn(null);
         when(providerPort.getTreasuryExchangeRateFromRestClient(any())).thenReturn(Mono.error(new RuntimeException("API error")));
         assertThrows(ApiServiceUnavaliableException.class, () -> service.currencyConversion(tx, currency));

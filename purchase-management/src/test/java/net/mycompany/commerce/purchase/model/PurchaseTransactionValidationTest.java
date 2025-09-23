@@ -33,104 +33,96 @@ class PurchaseTransactionValidationTest {
 
     @Test
     void testValidTransaction() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("100.00"))
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("100.00"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     void testNullTransactionId() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(null)
-            .amount(new BigDecimal("100.00"))
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(null);
+        tx.setAmount(new BigDecimal("100.00"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("transactionId")));
     }
 
     @Test
     void testNullAmount() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(null)
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(null);
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testNegativeAmount() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("-10.00"))
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("-10.00"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testAmountTooManyDigits() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("12345678901234.56"))
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("12345678901234.56"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("amount")));
     }
 
     @Test
     void testNullCurrency() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("100.00"))
-            .currency(null)
-            .purchaseDate(LocalDate.now())
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("100.00"));
+        tx.setCurrency(null);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("currency")));
     }
 
     @Test
     void testNullPurchaseDate() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("100.00"))
-            .currency(validCurrency)
-            .purchaseDate(null)
-            .description("desc")
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("100.00"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(null);
+        tx.setDescription("desc");
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("purchaseDate")));
     }
 
     @Test
     void testDescriptionTooLong() {
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-            .transactionId(new TransactionId("tx-1"))
-            .amount(new BigDecimal("100.00"))
-            .currency(validCurrency)
-            .purchaseDate(LocalDate.now())
-            .description("a".repeat(81))
-            .build();
+        PurchaseTransaction tx = new PurchaseTransaction();
+        tx.setTransactionId(new TransactionId("tx-1"));
+        tx.setAmount(new BigDecimal("100.00"));
+        tx.setCurrency(validCurrency);
+        tx.setPurchaseDate(LocalDate.now());
+        tx.setDescription("a".repeat(81));
         Set<ConstraintViolation<PurchaseTransaction>> violations = validator.validate(tx);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }

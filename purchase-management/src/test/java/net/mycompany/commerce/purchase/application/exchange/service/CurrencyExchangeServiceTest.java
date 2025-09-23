@@ -39,13 +39,12 @@ class CurrencyExchangeServiceTest {
                 .countryName("Brazil")
                 .build();
         Currency purchaseCurrency = Currency.builder().code("BRL").name("Real").country("Brazil").build();
-        PurchaseTransaction tx = PurchaseTransaction.builder()
-                .transactionId(new TransactionId("tx-1"))
-                .amount(new BigDecimal("10.00"))
-                .currency(purchaseCurrency)
-                .purchaseDate(LocalDate.now())
-                .description("desc")
-                .build();
+        PurchaseTransaction tx = new PurchaseTransaction(
+                new TransactionId("tx-1"),
+                new BigDecimal("10.00"),
+                purchaseCurrency,
+                LocalDate.now(),
+                "desc");
         ConvertedCurrency converted = ConvertedCurrency.builder()
                 .currency(purchaseCurrency)
                 .exchangeRateAmount(new BigDecimal("2.00"))

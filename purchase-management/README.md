@@ -1,10 +1,10 @@
 # eCommerce Purchase Management Service
 
 First of all, I would like to thank you for the opportunity. This project was hard work but also very entertaining.
-
+						
 **This project has a particular way to be tested, please read the all documentation to understand.**
 
-
+---
 
 #Security
 
@@ -23,7 +23,7 @@ They should be placed together with the code? Of course not, but it makes easier
 All security configurations are placed in  
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── infrastructure
     ├── config
         ├── security
@@ -34,6 +34,7 @@ net.mycompany.commerce.purchase
             └── SecurityConfig.java              # Security configuration for the application
 ```
 
+---
 
 #Audit
 
@@ -45,7 +46,7 @@ Every time a purchase is stored in the database, a (mock) Kafka event runs async
 The Audit logic is placed in
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── infrastructure
     ├── config
         ├── audit
@@ -54,7 +55,7 @@ net.mycompany.commerce.purchase
             ├── PurchaseTransactionSubject.java  # Subject for purchase transaction audit events
             └── TransactionObserver.java         # Observes transaction events for auditing
 ```
-
+---
 
 #Cache
 
@@ -69,7 +70,7 @@ So when a client purchase and right away asks for Exchange, the Exchange Rate wi
 The Cache is configured in
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── infrastructure
     ├── config
         ├── cache
@@ -80,12 +81,23 @@ net.mycompany.commerce.purchase
 and called after application startup in 
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── infrastructure
     ├── integration
         └── treasury
             ├── TreasuryExchangeRateProvider.java    # Implements ExchangeRateProviderPort, fetches rates from Treasury API
 ```
+
+---
+
+#Scheduler
+
+This project has **Scheduler** implemented
+
+In addition to the Cache, to retrieve the exchanges Rates every day, the U.S Treasury Caching method is executed every 24 hours. 
+ 
+ 
+---
 
 #Logs
 
@@ -93,6 +105,19 @@ This project **Masks sensitive data in the logs**.
 
 The Purchase amount is set to be masked just as an example. 
 
+---
+
+#Actuator
+
+This project has **Metrics** implemented
+
+health, info, metrics, loggers, env, beans, mappings...
+
+Al can be checking by running 
+
+`https://localhost:8443/actuator/{service}`
+
+---
 
 #Documentation
 
@@ -105,7 +130,7 @@ The Event-Driven Documentation can be seeing calling `https://localhost:8443/spr
 The documentation configuration are in 
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── infrastructure
     ├── config
         ├── swagger
@@ -116,6 +141,8 @@ and all over the DTOs, Controllers, Consumers and Publishers
 
 There is no configuration for the Springwolf outside the application.properties
 
+
+---
 
 #Services
 
@@ -131,14 +158,14 @@ Like the Cache, I add a Requirement #4 in order to implement messaging in this p
 The complete logic are implemented in:
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── application
     ├── port
     │   └── out
     │       ├── AuditEvent.java                  # Represents an audit event for transaction changes
     │       ├── AuditEventPublisher.java         # Interface for publishing audit events
     │       └── KafkaAuditEventPublisher.java    # Mock implementation for publishing audit events to Kafka
-    └── store
+    └── purchase
         ├── consumer
         │   └── PurchaseConsumer.java            # Consumes purchase requests from a queue and processes them
         ├── dto
@@ -158,7 +185,7 @@ And the **Currency Exchange** Service is to convert the purchase amount between 
 The complete logic are implemented in:
 
 ``` 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 ├── application
 │   ├── exchange
 │       ├── controller
@@ -206,6 +233,8 @@ This services could be split into 2 different Micro Services, but I decided to p
  - testing: 
  - a well made monolith can be better then split into Micro Services from the beggining: 
  
+--- 
+ 
 #Production
 
 The repository **main** branch should have all set to be deployed in production:
@@ -219,18 +248,17 @@ but, this could make harder for you to test, so this application is **not ready 
 
 This project will be closer to production when the next features are implemented. 
  
+---
  
 #Next Features
 
 I hadn't have time to implement all basic functions for a production environment so this are the main features that are missing:
 
-- **Schedule read the ExchageRates every day and cache then**
-- **actuator**
-- **dockerfile**
-- **Circuit Breaker**
 - **Observability Integration**
 - **Helm charts**
 - **CI/CD pipelines**
+
+---
 
 #Tests
 
@@ -268,16 +296,24 @@ Right after calling the `enqueuePurchase` the transactionId will be logged more 
 
 I am attaching my Postman environment and collection and also .json requests under'testing' folder in the repository root to make it easier.
 
-
+---
 
 #Executing
-
-This is a Spring Boot project with Gradle, so to startup the project, run `./gradlew bootRun` in the project root folder. 
 
 This project uses **Lombok**, so if you do not already have installed the Entities, DTOs and ObjectValues can present errors in where they are called. 
 Install [Lombok](https://projectlombok.org/download) to stop seeing these errors.    
 
+This is a Spring Boot project with Gradle, so to startup the project, run `./gradlew bootRun` in the project root folder. 
 
+To startup with docker please run in the project root folder:
+
+`sudo docker build -t purchase-management .`
+
+then
+
+`sudo docker run -p 8443:8443 purchase-management`
+
+---
 
 
 #All project structure
@@ -302,7 +338,7 @@ net.mycompany.commerce.mock
 ├── ProducerMock.java                   # Mock REST controller for enqueuing purchase requests
 └── QueueManagerServiceMock.java        # Simulates queue manager for purchase requests/responses
 
-net.mycompany.commerce.purchase
+net.mycompany.commerce.purchasemgmt
 │
 ├── PurchaseManagementApplication.java  # Main Spring Boot application class
 │
@@ -320,7 +356,7 @@ net.mycompany.commerce.purchase
 │   │       ├── AuditEvent.java                  # Represents an audit event for transaction changes
 │   │       ├── AuditEventPublisher.java         # Interface for publishing audit events
 │   │       └── KafkaAuditEventPublisher.java    # Mock implementation for publishing audit events to Kafka
-│   └── store
+│   └── purchase
 │       ├── consumer
 │       │   └── PurchaseConsumer.java            # Consumes purchase requests from a queue and processes them
 │       ├── dto
@@ -374,6 +410,8 @@ net.mycompany.commerce.purchase
 │   │   │   ├── TreasuryApiProperties.java       # Configuration for Treasury API
 │   │   │   ├── WebClientFactory.java            # Factory for creating WebClient instances
 │   │   │   └── WebClientLoggingFilters.java     # Logging filters for WebClient
+│   │   ├── Scheduler
+│   │   │   └── SchedulerConfig.java             # Scheduler configuration
 │   │   ├── security
 │   │   │   ├── AuthController.java              # Controller for authentication endpoints
 │   │   │   ├── AuthRequest.java                 # DTO for authentication requests
@@ -402,11 +440,14 @@ net.mycompany.commerce.purchase
 │       └── PurchaseTransactionRepository.java       # JPA repository for PurchaseTransaction entities
 ```
 
+
+
+
 ---
 
 # C4 Model — Purchase Management
 
-**Project:** `net.mycompany.commerce.purchase`
+**Project:** `net.mycompany.commerce.purchasemgmt`
 
 **Overview:** C4 documentation (Context, Containers, Components, Code + flows and sequence diagrams) of the Purchase Management microservice.
 
@@ -496,28 +537,36 @@ The **Purchase Management** is responsible for processing and persisting purchas
 
 ## 4. Main Flows (sequence and events)
 
-### 4.1 Flow: Currency conversion (synchronous HTTP)
-1. Client calls `POST /exchange/convert` on `ExchangeController` with `ExchangeRateRequestDto`.
+### 4.1 Flow: Purchase transaction amount currency conversion (synchronous HTTP)
+1. External system calls `POST /purchase/exchange/v1/convertCurrency` on `ExchangeController` with `ExchangeRateRequestDto`.
 2. `ExchangeController` validates request and calls `CurrencyExchangeService`.
-3. `CurrencyExchangeService` checks `CacheService` for rate.
-   - If not found, calls `ExchangeRateProviderPort` (`TreasuryExchangeRateProvider`) to fetch rate from Treasury.
-   - Maps response to `ExchangeRate` VO and stores in cache.
-4. Calculates `ConvertedCurrency` and returns `ExchangeRateResponseDto`.
-5. `ExchangeController` responds to client.
+3. `CurrencyExchangeService` calls `PurchaseTransactionRepository`, get the `PurchaseTransaction` and 
+ <br>- call `PurchaseDomainService` sending `PurchaseTransaction`  
+4. `PurchaseDomainService` 
+ <br>- checks purchase date 
+ <br>- If is today, call `CacheService` for country rate.
+ <br>- If country rate found or not today, calls `ExchangeRateProviderPort` (`TreasuryExchangeRateProvider`) to fetch rate from Treasury.
+ <br>- Calculates Currency Conversion and returns `ConvertedCurrency`.
+5. `CurrencyExchangeService` maps `ConvertedCurrency` to `ExchangeRateResponseDto`. 
+6. `ExchangeController` responds  `ExchangeRateResponseDto` to client.
 
 **Sequence**
 
 ![SequenceOne](doc/c4-images/4.png)
 
-### 4.2 Flow: Purchase processing (asynchronous via queue)
-1. External system (Producer/Front) publishes `StorePurchaseRequestDto` to the queue.
-2. `PurchaseConsumer` consumes the message.
-3. `PurchaseConsumer` maps DTO to `PurchaseTransaction` using `PurchaseTransactionMapper`.
-4. `StorePurchaseService` calls `PurchaseDomainService` to validate rules (e.g. fields, limits, currency conversion if needed via `ExchangeRateProviderPort`).
-5. `TransactionIdGeneratorPort` (NanoId adapter) generates `TransactionId`.
-6. Persists `PurchaseTransaction` via `PurchaseTransactionRepository`.
-7. Publishes `StorePurchaseResponseDto` to the queue with `PurchasePublisher`.
-8. Publishes `AuditEvent` through `AuditEventPublisher` (Kafka).
+### 4.2 Flow: Store purchase transaction (asynchronous via queue)
+1. External system (Producer) publishes `StorePurchaseRequestDto` to the request queue.
+2. `PurchaseConsumer` consumes the message, validates and calls `StorePurchaseService`.
+3. `StorePurchaseService` 
+ <br>- maps `StorePurchaseRequestDto` to `PurchaseTransaction` using `PurchaseTransactionMapper` and generates `TransactionId` using `TransactionIdGeneratorPort` (NanoId adapter).
+ <br>- calls `CurrencyRepository` for the default commerce currency and get `Currency`
+ <br>- sets `Currency` in `PurchaseTransaction`
+ <br>- calls `PurchaseTransactionRepository` and saves `PurchaseTransaction`.
+ <br>- maps `PurchaseTransaction` to `StorePurchaseResponseDto` using `PurchaseTransactionMapper`
+ <br>- notifies `PurchaseTransactionSubject` creating an `AuditEvent` mapping `PurchaseTransaction`  
+ <br>- calls `PurchasePublisher` sending `StorePurchaseResponseDto` 
+4. `PurchasePublisher` publishes `StorePurchaseResponseDto` to the response queue.
+5. `AuditEventPublisher` publishes asynchronously `AuditEvent` in the request queue.
 
 **Sequence**
 
@@ -528,15 +577,24 @@ The **Purchase Management** is responsible for processing and persisting purchas
 ## 5. Data Models & Contracts
 
 ### 5.1 Main Entities
-- `Currency` (id, code, name, country, updatedAt)
-- `PurchaseTransaction` (id, transactionId, amount, currencyCode, description, date, status, createdAt, updatedAt)
+- `Currency` (id, code, name, country)
+- `PurchaseTransaction` (id, transactionId, amount, Currency, purchaseDate, description)
 
-### 5.2 DTOs / Contracts
-- `ExchangeRateRequestDto` { fromCurrency, toCurrency, amount, date? }
-- `ExchangeRateResponseDto` { originalAmount, convertedAmount, rate, timestamp }
-- `StorePurchaseRequestDto` { amount, currency, description, date }
+### 5.2 DTOs / Contracts / Value Objects
+- `ExchangeRateRequestDto` { transactionId, country }
+- `ExchangeRateResponseDto` { transactionId, description, purchaseCurrency, purchaseAmount, transactionDate, targetCountry, targetAmount, exchangeRate }
+- `StorePurchaseRequestDto` { amount, description, purchaseDate }
 - `StorePurchaseResponseDto` { transactionId }
-- `AuditEvent` { entityId, operation, timestamp, payload }
+- `CurrencyDto` { code, name, country }
+- `AuditEvent` { transactionId, operation, changedBy, changedDate }
+- `ExchangeRateDto` { country, currency, exchangeRateAmount, effectiveDate }
+- `TreasuryExchangeRateFilterDto` { country, requestDateFrom, requestDateTo, sortBy }
+- `TreasuryExchangeRateSortDto` { COUNTRY, EFFECTIVE_DATE }
+- `PaginationFiltersDto` { pageNumber, pageSize }
+- `TreasuryExchangeRateResponseDto` { data[ExchangeRateDto] }
+- `ConvertedCurrency` ( currency, exchangeRateAmount, convertedAmount )
+- `ExchangeRate` ( currency, exchangeRateAmount, effectiveDate )
+- `TransactionId` ( value )
 
 ### 5.3 Queue Events
 - `store.purchase.request` — payload `StorePurchaseRequestDto`
@@ -545,41 +603,63 @@ The **Purchase Management** is responsible for processing and persisting purchas
 
 ---
 
-## 6. Non-functional & Cross-cutting Concerns
+## 6. Non-functional & Cross-cutting
 
 ### 6.1 Security
 - JWT authentication via `JwtAuthenticationFilter`.
-- Role-based authorization for sensitive endpoints (e.g. admin endpoints).
+- mTLS cryptographic 
 - TraceId propagation via `TraceIdFilter` for log/request correlation.
 
-### 6.2 Resilience
-- Timeouts and retries on calls to `Treasury` with `WebClient` and exponential backoff.
-- Circuit Breaker (e.g. Resilience4j) recommended when calling `Treasury`.
-- Validation and dead-letter queue (DLQ) for messages that fail repeatedly.
+### 6.2 logging
+- TraceId propagation via `TraceIdFilter` for log/request correlation.
+- private data mask via Logback 
 
-### 6.3 Observability
-- Structured logs (traceId, spanId, transactionId)
-- Metrics (request count, latency, queue lag, consumer throughput)
-- Export metrics to Prometheus and dashboards in Grafana
-
-### 6.4 Performance & Cache
+### 6.3 Performance & Cache
 - Cache for exchange rates (TTL configurable in `CacheConfig`).
-- DB indices on `transactionId`, `date` for fast queries.
+- Async calls to Audit in `AuditEventPublisher`
 
-### 6.5 Tests
+### 6.4 Tests
 - Mocks (`mock` package) for queueing and currency initialization.
 - Unit tests for `PurchaseDomainService`, integration tests for `TreasuryExchangeRateProvider` (using WireMock) and contract tests for the queue.
+
+### 6.5 API Documentation
+- Swagger + OpenAPI for REST Endpoints Documentation
+- Springwolf for Queue Eventi-Driven API Documentation
+
+### 6.6 Resilience
+- Timeouts and retries on calls to `Treasury` with `WebClient` and exponential backoff.
+- Using Circuit Breaker (e.g. Resilience4j) when calling `Treasury`.
+
+### 6.6 Metrics
+- Actuator Metrics (request count, latency, queue lag, consumer throughput)  
+
 
 ---
 
 ## 7. Deployment / Infrastructure (C4 Deployment suggestions)
 
 - **Kubernetes (recommended)**
-  - Deployment `purchase-management` with readiness/liveness probes.
-  - ConfigMap/Secrets for `Treasury` credentials, JWT secrets, DB connection.
+  - CI pipeline: 
+  	<br>- Code Repository Integration (or Artifact repository)
+  	<br>- Static Code Analysis (Quality and Vulnerabilities)
+  	<br>- Dependency check Analysis (Vulnerabilities)
+  	<br>- Container Scan (Vulnerabilities)
+  	<br>- Unit and Integration tests
+  	<br>- API Contract Tests
+  	<br>- Bean Validation Tests
+  	<br>- Performance Tests
+  	<br>- E2E tests
+  	<br>- Resilience Tests
+  - CD Pipeline
+  	<br>- Version control
+  	<br>- Rollback
+  	<br>- Permissions  
+  - Deployment purchase-management with readiness/liveness probes.
+  - Environemnt configuration with Helm manager
+  - ConfigMap/Secrets for credentials, JWT secrets, DB connection.
   - Stateful/Deployment for DB (or managed RDS service).
-  - Kafka cluster (or managed Kafka) for queues and audit topics.
   - Horizontal Pod Autoscaler based on CPU/latency.
+  - vertical Pod Autoscaler based on Load.
 
 - **Topology**
 
@@ -589,36 +669,12 @@ The **Purchase Management** is responsible for processing and persisting purchas
 
 ## 8. Architectural Recommendations & Improvements
 
-1. **Circuit Breaker + Bulkhead** for external calls (Treasury).
-2. **DLQ and Retry Policy** for queue consumers; monitor failed messages.
-3. **Contracts / Schema Registry** (Avro/JSON Schema) for queue messages to avoid contract break on deploy.
-4. **API Gateway** to centralize authentication and routing.
-5. **Domain Events explicit**: normalize `AuditEvent` and other events in a common schema.
-6. **Migrations (Flyway/Liquibase)** to manage DB schema.
-7. **Feature flags** to release experimental behaviors (e.g. new rate logic).
+1. **DLQ and Retry Policy** for queue consumers; monitor failed messages.
+2. **Contracts / Schema Registry** (Avro/JSON Schema) for queue messages to avoid contract break on deploy.
+3. **API Gateway** to centralize authentication and routing.
+4. **WAF** to request filtering and security.
+5. **Migrations (Flyway/Liquibase)** to manage DB schema.
+6. **Observability Integration** to security/metrics
 
 ---
-
-## 9. Glossary and Responsibilities (quick mapping)
-- **ExchangeController**: responsible for exposing exchange endpoints and light validation.
-- **CurrencyExchangeService**: retrieve/cache rate and calculate conversion.
-- **PurchaseConsumer**: orchestrate message processing from the queue.
-- **StorePurchaseService**: application logic for creating transactions.
-- **PurchaseDomainService**: pure business rules (validations and invariants).
-- **NanoIdTransactionIdGeneratorAdapter**: responsible for creating unique IDs.
-- **KafkaAuditEventPublisher**: publish audit events.
-
----
-
-## 10. Possible Next Steps (delivery suggestions)
-- Generate C4 visual diagrams with [PlantUML / Structurizr] exporting the above mermaid to visual tools.
-- Create operation playbooks (playbook for queue failures, treasury failures, DB recovery).
-- Map concrete endpoints (urls, verbs, payloads) if you want generated OpenAPI documentation.
-
----
-
-_If you want, I can:_
-- transform these mermaid diagrams into PlantUML (for Structurizr)
-- generate a README + summarized diagram in PNG (if you ask me to create files)
-- list REST endpoints complete with payload examples
 

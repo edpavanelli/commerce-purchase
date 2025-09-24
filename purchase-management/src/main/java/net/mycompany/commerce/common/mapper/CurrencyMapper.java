@@ -3,7 +3,7 @@ package net.mycompany.commerce.common.mapper;
 import org.springframework.stereotype.Component;
 
 import net.mycompany.commerce.common.dto.CurrencyDto;
-import net.mycompany.commerce.purchase.domain.model.Currency;
+import net.mycompany.commerce.purchasemgmt.domain.model.Currency;
 
 
 

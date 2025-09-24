@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
+import net.mycompany.commerce.purchasemgmt.application.purchase.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchasemgmt.application.purchase.dto.StorePurchaseResponseDto;
 
 @Service
 public class QueueManagerServiceMock {

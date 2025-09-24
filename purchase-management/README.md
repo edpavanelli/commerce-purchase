@@ -301,7 +301,12 @@ I am attaching my Postman environment and collection and also .json requests und
 #Executing
 
 This project uses **Lombok**, so if you do not already have installed the Entities, DTOs and ObjectValues can present errors in where they are called. 
-Install [Lombok](https://projectlombok.org/download) to stop seeing these errors.    
+Install [Lombok](https://projectlombok.org/download) to stop seeing these errors. 
+
+compile and generate jar:
+
+`./gradlew build`  
+`./gradlew clean bootJar`   
 
 This is a Spring Boot project with Gradle, so to startup the project, run `./gradlew bootRun` in the project root folder. 
 

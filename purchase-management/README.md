@@ -6,7 +6,7 @@ First of all, I would like to thank you for the opportunity. This project was ha
 
 ---
 
-#Security
+## Security
 
 This project has **JWT** and **mTLS** implemented.
 
@@ -36,7 +36,7 @@ net.mycompany.commerce.purchasemgmt
 
 ---
 
-#Audit
+## Audit
 
 This project has a **Mock Audit** simulation. 
 
@@ -57,7 +57,7 @@ net.mycompany.commerce.purchasemgmt
 ```
 ---
 
-#Cache
+## Cache
 
 This project has a **Spring Cache** implementation to emulate a **cache aside pattern** with a real key/value memory database.
 
@@ -90,7 +90,7 @@ net.mycompany.commerce.purchasemgmt
 
 ---
 
-#Scheduler
+## Scheduler
 
 This project has **Scheduler** implemented
 
@@ -99,7 +99,7 @@ In addition to the Cache, to retrieve the exchanges Rates every day, the U.S Tre
  
 ---
 
-#Logs
+## Logs
 
 This project **Masks sensitive data in the logs**.
 
@@ -107,7 +107,7 @@ The Purchase amount is set to be masked just as an example.
 
 ---
 
-#Actuator
+## Actuator
 
 This project has **Metrics** implemented
 
@@ -119,7 +119,7 @@ Al can be checking by running
 
 ---
 
-#Documentation
+## Documentation
 
 This project has **Swagger** with **OpenAPI** Documentation for REST API and **Springwolf** for Event-Driven API implemented.
 
@@ -144,7 +144,7 @@ There is no configuration for the Springwolf outside the application.properties
 
 ---
 
-#Services
+## Services
 
 There are two services implemented:
 
@@ -235,7 +235,7 @@ This services could be split into 2 different Micro Services, but I decided to p
  
 --- 
  
-#Production
+## Production
 
 The repository **main** branch should have all set to be deployed in production:
 	
@@ -250,7 +250,7 @@ This project will be closer to production when the next features are implemented
  
 ---
  
-#Next Features
+## Next Features
 
 I hadn't have time to implement all basic functions for a production environment so this are the main features that are missing:
 
@@ -260,7 +260,7 @@ I hadn't have time to implement all basic functions for a production environment
 
 ---
 
-#Tests
+## Tests
 
 This project has **JUnit** Tests implemented.
 
@@ -298,7 +298,7 @@ I am attaching my Postman environment and collection and also .json requests und
 
 ---
 
-#Executing
+## Executing
 
 This project uses **Lombok**, so if you do not already have installed the Entities, DTOs and ObjectValues can present errors in where they are called. 
 Install [Lombok](https://projectlombok.org/download) to stop seeing these errors. 
@@ -321,7 +321,7 @@ then
 ---
 
 
-#All project structure
+## All project structure
 
 ``` 
 net.mycompany.commerce.common

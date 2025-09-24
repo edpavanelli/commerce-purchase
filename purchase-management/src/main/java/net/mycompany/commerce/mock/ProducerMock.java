@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseRequestDto;
-import net.mycompany.commerce.purchase.application.store.dto.StorePurchaseResponseDto;
+import net.mycompany.commerce.purchasemgmt.application.purchase.dto.StorePurchaseRequestDto;
+import net.mycompany.commerce.purchasemgmt.application.purchase.dto.StorePurchaseResponseDto;
 
 @RestController
 @RequestMapping("/commerce/purchase/v1")

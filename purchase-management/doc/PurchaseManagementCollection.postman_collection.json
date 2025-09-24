@@ -1,0 +1,255 @@
+{
+	"info": {
+		"_postman_id": "1c80f0d6-17f7-4d6e-9d68-3ddfaf3df07a",
+		"name": "PurchaseManagementCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48620976"
+	},
+	"item": [
+		{
+			"name": "getToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"let tokenValue = response.token;",
+							"pm.environment.set(\"token\", tokenValue);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"clientId\": \"myclient\",\n  \"secret\": \"changeit\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{securelocalhost}}/auth/token",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"auth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "StorePurchase",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 21.00,\n    \"description\": \"supplies\",\n    \"purchaseDate\": \"2025-09-21\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{securelocalhost}}/commerce/purchase/v1/store",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"commerce",
+						"purchase",
+						"v1",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPurchaseResponse",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"let txId = response.transactionId;",
+							"pm.environment.set(\"transactionId\", txId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{securelocalhost}}/commerce/purchase/v1/6YEaUCIlDw8STnZ",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"commerce",
+						"purchase",
+						"v1",
+						"6YEaUCIlDw8STnZ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "convertCurrency",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"transactionId\": \"{{transactionId}}\",\n  \"countryName\": \"Brazil\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{securelocalhost}}/purchase/exchange/v1/convertCurrency",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"purchase",
+						"exchange",
+						"v1",
+						"convertCurrency"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "springwolf-Docs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{securelocalhost}}/springwolf/docs",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"springwolf",
+						"docs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "swagger-Docs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{securelocalhost}}/v3/api-docs/",
+					"host": [
+						"{{securelocalhost}}"
+					],
+					"path": [
+						"v3",
+						"api-docs",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "treasury-reporting-rates-of-exchange",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/rates_of_exchange?filter=effective_date:lte:2025-09-20,effective_date:gte:2025-03-20,country:eq:Brazil&sort=-effective_date&page%5Bnumber%5D=1&page%5Bsize%5D=3",
+					"protocol": "https",
+					"host": [
+						"api",
+						"fiscaldata",
+						"treasury",
+						"gov"
+					],
+					"path": [
+						"services",
+						"api",
+						"fiscal_service",
+						"v1",
+						"accounting",
+						"od",
+						"rates_of_exchange"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "effective_date:lte:2025-09-20,effective_date:gte:2025-03-20,country:eq:Brazil"
+						},
+						{
+							"key": "sort",
+							"value": "-effective_date"
+						},
+						{
+							"key": "page%5Bnumber%5D",
+							"value": "1"
+						},
+						{
+							"key": "page%5Bsize%5D",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

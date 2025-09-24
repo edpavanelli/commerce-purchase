@@ -10,7 +10,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.context.event.EventListener;

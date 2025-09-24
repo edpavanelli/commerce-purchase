@@ -17,7 +17,7 @@ Under `src/main/resources/certs` there are 5 certificates:
  - server-keystore.p12
  - server-trustsrore.p12
 
-They should be placed together with the code? Of course not, but it makes easier for us to test.
+Should they be placed together with the code? Of course not, but it makes easier for us to test.
 <br>You can use the **client-keystore.p12** in your browser to see the Swagger and the **client-cert.pem** and the **client-key.pem** in your test tool.
 
 All security configurations are placed in  
@@ -40,7 +40,7 @@ net.mycompany.commerce.purchasemgmt
 
 This project has a **Mock Audit** simulation. 
 
-Every time a purchase is stored in the database, a (mock) Kafka event runs asynchrony to the Audit Service audit the purchase. 
+Every time a purchase is stored in the database, a (mock) Kafka event runs asynchronously to allow the Audit Service to audit the purchase. 
 (the request publish is just a log line)
   
 The Audit logic is placed in
@@ -59,13 +59,13 @@ net.mycompany.commerce.purchasemgmt
 
 ## Cache
 
-This project has a **Spring Cache** implementation to emulate a **cache aside pattern** with a real key/value memory database.
+This project has a **Spring Cache** implementation to emulate a **cache-aside pattern** with a real key/value memory database.
 
-Once this project is an opportunity to show you what I know, I felt free to add a Requirement #3 in order to implement Cache in this project:
+Since this project is an opportunity to show you what I know, I felt free to add a Requirement #3 in order to implement Cache in this project:
 
- - **Today Exchange Rates from the countries MyCompany is placed must be retrieved every day and must be cached due high demand.** 
+ - **Today's Exchange Rates from the countries MyCompany operates in must be retrieved every day and must be cached due to high demand.** 
 
-So when a client purchase and right away asks for Exchange, the Exchange Rate will be retrieved from the Cache.
+So when a client makes a purchase and right away asks for Exchange, the Exchange Rate will be retrieved from the Cache.
 
 The Cache is configured in
 
@@ -123,9 +123,9 @@ Al can be checking by running
 
 This project has **Swagger** with **OpenAPI** Documentation for REST API and **Springwolf** for Event-Driven API implemented.
 
-The Rest documentation can be seeing in the browser at this location `https://localhost:8443/swagger-ui/index.html` and called by API `https://localhost:8443/v3/api-docs`. 
+The Rest documentation can be seen in the browser at this location `https://localhost:8443/swagger-ui/index.html` and called by API `https://localhost:8443/v3/api-docs`. 
 
-The Event-Driven Documentation can be seeing calling `https://localhost:8443/springwolf/docs` but can not be seeing in a browser because Springwolf need a real server with a real protocol running. Which is not our case.  
+The Event-Driven Documentation can be seen calling `https://localhost:8443/springwolf/docs` but cannot be seen in a browser because Springwolf need a real server with a real protocol running. Which is not our case.  
 
 The documentation configuration are in 
 
@@ -148,9 +148,9 @@ There is no configuration for the Springwolf outside the application.properties
 
 There are two services implemented:
 
-The **Store Purchase** Service is to save a new Purchase in the database. 
+The **Store Purchase** Service saves a new purchase in the database. 
 
-Like the Cache, I add a Requirement #4 in order to implement messaging in this project:
+Like the Cache, I added a Requirement #4 in order to implement messaging in this project:
 
 - **Queue must be implemented to Store new Purchases due to high demand**  
 
@@ -180,7 +180,7 @@ net.mycompany.commerce.purchasemgmt
 ```
 
 
-And the **Currency Exchange** Service is to convert the purchase amount between different currencies. 
+And the **Currency Exchange** Service converts the purchase amount between different currencies.
 
 The complete logic are implemented in:
 
@@ -227,11 +227,10 @@ net.mycompany.commerce.purchasemgmt
 ```
  
  
-This services could be split into 2 different Micro Services, but I decided to put it together for 3 reasons:
+This services could be split into 2 different Microservices, but I decided to put it together for 2 reasons:
 
- - Implementation Time: I wanted to focus first in other aspects like, auth, log, exception, cache, documentation, etc...
- - testing: 
- - a well made monolith can be better then split into Micro Services from the beggining: 
+ - Implementation Time: I wanted to focus first in other aspects like, auth, log, exception, cache, documentation, etc... 
+ - A well made monolith can be better then a lot of Microservices: Microservices can add a lot of governance and maintenance difficulties. If a problem can be well solved with just one application it can be better to maintain.   
  
 --- 
  
@@ -244,7 +243,7 @@ The repository **main** branch should have all set to be deployed in production:
  - Security properties, like JWT and client secrets, in a HSM. 
  - Environment properties 
 
-but, this could make harder for you to test, so this application is **not ready yet** to be productive. Consider the **main** branch just a Q&A approved branch.
+But, this could make harder for you to test, so this application is **not ready yet** for production.
 
 This project will be closer to production when the next features are implemented. 
  
@@ -252,7 +251,7 @@ This project will be closer to production when the next features are implemented
  
 ## Next Features
 
-I hadn't have time to implement all basic functions for a production environment so this are the main features that are missing:
+I haven’t had time to implement all basic functions for a production environment, so these are the main features that are missing:
 
 - **Observability Integration**
 - **Helm charts**
@@ -270,8 +269,8 @@ Therefore, to emulate a MessageQueue tool, two classes was implemented:
 	   <br>- ProducerMock
 	   <br>- QueueManagerServiceMock
 
-The **ProducerMock** is a simulation of an other system sending a message through a queue and then listening another queue to get the response.
-<br>The **QueueManagerServiceMock** is a simulation of a QueueManager with the Request and Response queues running. 
+The **ProducerMock** simulates another system sending a message through a queue and then listening another queue to get the response.
+<br>The **QueueManagerServiceMock** simulates a QueueManager with the Request and Response queues running. 
 <br>Also, there is the **CurrencyInitializerMock** class that create a currency record in the database emulating a already loaded database. 
 
 These classes exist just to help us to test, they are not part of the Purchase Management Project. These should not be in a production environment.  
@@ -285,22 +284,22 @@ net.mycompany.commerce.mock
 ```
 
 Inside the ProducerMock.java there is a method: 
-<br>`POST (/commerce/purchase/v1/store)` emulating a request queue, so this method do not return any data. 
+<br>`POST (/commerce/purchase/v1/store)` emulating a request queue, so this method does not return any data.
 
 and a method:
 <br>`GET (/commerce/purchase/v1/{transactionId})`  emulating a response queue, you may call this method only if you wish to emulate a external system receiving the response from another queue.
 
-**but**, to execute the `GET (/commerce/purchase/v1/{transactionId})` and `POST (/purchase/exchange/v1/convertCurrency)` method from the **ExchangeController** class **you need to retrieve the transactionId from the logs**
+**but**, to execute the `GET (/commerce/purchase/v1/{transactionId})` and `POST (/purchase/exchange/v1/convertCurrency)` methods from the **ExchangeController** class **you need to retrieve the transactionId from the logs**
 
-Right after calling the `enqueuePurchase` the transactionId will be logged more then once. 
+Right after calling the `enqueuePurchase` the transactionId will be logged more than once. 
 
-I am attaching my Postman environment and collection and also .json requests under'testing' folder in the repository root to make it easier.
+I am attaching my Postman environment and collection in the project root directory to make it easier.
 
 ---
 
 ## Executing
 
-This project uses **Lombok**, so if you do not already have installed the Entities, DTOs and ObjectValues can present errors in where they are called. 
+This project uses **Lombok**, so if you do not already have installed, the Entities, DTOs and ObjectValues may show errors where they are called. 
 Install [Lombok](https://projectlombok.org/download) to stop seeing these errors. 
 
 compile and generate jar:
@@ -310,7 +309,7 @@ compile and generate jar:
 
 This is a Spring Boot project with Gradle, so to startup the project, run `./gradlew bootRun` in the project root folder. 
 
-To startup with docker please run in the project root folder:
+To startup with docker, please run in the project root folder:
 
 `sudo docker build -t purchase-management .`
 

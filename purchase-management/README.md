@@ -63,7 +63,7 @@ This project has a **Spring Cache** implementation to emulate a **cache aside pa
 
 Once this project is an opportunity to show you what I know, I felt free to add a Requirement #3 in order to implement Cache in this project:
 
- - **Today Exchange Rates from the countries MyCompany is placed must be retrieved every day and must be cached due high demand. ** 
+ - **Today Exchange Rates from the countries MyCompany is placed must be retrieved every day and must be cached due high demand.** 
 
 So when a client purchase and right away asks for Exchange, the Exchange Rate will be retrieved from the Cache.
 
@@ -152,7 +152,7 @@ The **Store Purchase** Service is to save a new Purchase in the database.
 
 Like the Cache, I add a Requirement #4 in order to implement messaging in this project:
 
-- ** Queue must be implemented to Store new Purchases due to high demand **  
+- **Queue must be implemented to Store new Purchases due to high demand**  
 
 
 The complete logic are implemented in:

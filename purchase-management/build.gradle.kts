@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "net.mycompany.commerce"
-version = "1.0.0"
+version = "1.1.0"
 description = "MicroServicee dedicated to manage purchases from commerce users"
 
 java {
